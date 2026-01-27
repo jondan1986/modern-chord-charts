@@ -1,82 +1,86 @@
 "use client";
 
-import React, { useState } from "react";
-import { MCSParser } from "@/src/mcs-core/parser";
-import { SongViewer } from "@/src/components/viewer/SongViewer";
-import { DEFAULT_THEME, DARK_THEME } from "@/src/components/viewer/themes"; // Need to export these
-import Head from "next/head";
-import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { songStorage, StoredSong } from "@/src/services/storage";
 import { useAppStore } from "@/src/state/store";
 import { useRouter } from "next/navigation";
 
-const Themes = {
-  "Light Mode": DEFAULT_THEME,
-  "Dark Mode": DARK_THEME,
-};
+export default function LibraryPage() {
+    const [songs, setSongs] = useState<StoredSong[]>([]);
+    const loadSong = useAppStore((state) => state.loadSong);
+    const theme = useAppStore((state) => state.theme);
+    const router = useRouter();
 
-export default function Home() {
-  const router = useRouter();
-  const activeYaml = useAppStore((state) => state.activeYaml);
-  const setActiveYaml = useAppStore((state) => state.setActiveYaml);
-  const theme = useAppStore((state) => state.theme);
+    useEffect(() => {
+        loadLibrary();
+    }, []);
 
-  const [parsedSong, setParsedSong] = useState(MCSParser.parse(activeYaml)); // Initial state
-  const [parseError, setParseError] = useState<string | null>(null);
+    const loadLibrary = async () => {
+        const all = await songStorage.getAllSongs();
+        // Sort by updated descending
+        setSongs(all.sort((a, b) => b.updatedAt - a.updatedAt));
+    };
 
-  // Sync with store and handle errors gracefully
-  React.useEffect(() => {
-    try {
-      const song = MCSParser.parse(activeYaml);
-      setParsedSong(song);
-      setParseError(null);
-    } catch (e: any) {
-      setParseError(e.message);
-    }
-  }, [activeYaml]);
+    const handleOpen = async (id: string) => {
+        await loadSong(id);
+        router.push("/viewer"); // Go to viewer
+    };
 
-  const handleOpenEditor = () => {
-    router.push("/editor");
-  };
+    const handleEdit = async (id: string) => {
+        await loadSong(id);
+        router.push("/editor");
+    };
 
-  const handleCreateNew = () => {
-    useAppStore.getState().resetSong();
-    router.push("/editor");
-  }
+    const handleDelete = async (id: string) => {
+        if (confirm("Are you sure you want to delete this song?")) {
+            await songStorage.deleteSong(id);
+            loadLibrary();
+        }
+    };
 
-  return (
-    <div className="flex flex-col gap-8 p-8 h-full overflow-y-auto" style={{
-      backgroundColor: theme.colors.background,
-      color: theme.colors.text_primary
-    }}>
-      <div className="flex justify-between items-center bg-gray-100 p-6 rounded-lg dark:bg-gray-800" style={{
-        borderColor: theme.colors.section_header,
-      }}>
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Welcome to Modern Chord Charts</h1>
-          <p className="text-gray-600 dark:text-gray-400">View, Edit, and Manage your song library with ease.</p>
+    return (
+        <div className="p-8 max-w-5xl mx-auto h-full overflow-y-auto" style={{ backgroundColor: theme.colors.background, color: theme.colors.text_primary }}>
+            <div className="flex justify-between items-center mb-8 border-b pb-4" style={{ borderColor: theme.colors.section_header }}>
+                <h1 className="text-3xl font-bold">📚 Song Library</h1>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {songs.length} song{songs.length !== 1 ? 's' : ''}
+                </div>
+            </div>
+
+            {songs.length === 0 ? (
+                <div className="text-center py-20 text-gray-500 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-dashed dark:border-gray-700">
+                    <p className="text-xl font-medium">Your library is empty.</p>
+                    <p className="mt-2 text-sm">Create a new song using the "New Song" button or import a backup.</p>
+                </div>
+            ) : (
+                <div className="grid gap-3">
+                    {songs.map(song => (
+                        <div key={song.id}
+                            className="border p-4 rounded-lg flex justify-between items-center transition shadow-sm bg-white dark:bg-gray-900 group"
+                            style={{ borderColor: theme.colors.section_header }}
+                        >
+                            <div className="flex-1 cursor-pointer" onClick={() => handleOpen(song.id)}>
+                                <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">{song.title}</h3>
+                                <div className="text-gray-600 dark:text-gray-400">{song.artist}</div>
+                                <div className="text-xs mt-1 text-gray-400">
+                                    Last Updated: {new Date(song.updatedAt).toLocaleDateString()}
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <button onClick={() => handleOpen(song.id)} className="px-3 py-1.5 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 dark:hover:bg-blue-900/30 text-sm font-medium transition-colors">
+                                    📂 Open
+                                </button>
+                                <button onClick={() => handleEdit(song.id)} className="px-3 py-1.5 border border-gray-400 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium">
+                                    ✏️ Edit
+                                </button>
+                                <button onClick={() => handleDelete(song.id)} className="px-3 py-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded text-sm font-medium">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
-
-        <div className="flex gap-4 items-center">
-          <button onClick={handleOpenEditor} className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-500 transition-colors font-medium">
-            Edit Current Song
-          </button>
-          <button onClick={handleCreateNew} className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-500 transition-colors font-medium">
-            + Create New Song
-          </button>
-        </div>
-      </div>
-
-      {parseError && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-          <strong className="font-bold">Error loading song: </strong>
-          <span className="block sm:inline">{parseError}</span>
-        </div>
-      )}
-
-      {/* Single Viewer */}
-      <div className="border rounded-xl shadow-sm overflow-hidden" style={{ borderColor: theme.colors.section_header }}>
-        <SongViewer song={parsedSong} theme={theme} />
-      </div>
-    </div>
-  );
+    );
 }

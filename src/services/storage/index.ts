@@ -2,7 +2,7 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import { v4 as uuidv4 } from 'uuid';
 
-interface StoredSong {
+export interface StoredSong {
     id: string;
     title: string;
     artist: string;

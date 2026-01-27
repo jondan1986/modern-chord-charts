@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 };
 
 import Header from "@/src/components/layout/Header";
+import ActionBar from "@/src/components/layout/ActionBar";
 
 export default function RootLayout({
   children,
@@ -30,6 +31,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen flex flex-col overflow-hidden`}
       >
         <Header />
+        <ActionBar />
         <main className="flex-1 overflow-hidden">
           {children}
         </main>
