@@ -84,52 +84,46 @@ export default function LibraryPage() {
         reader.readAsText(file);
     };
 
+    const theme = useAppStore((state) => state.theme);
+
     return (
-        <div className="p-8 max-w-4xl mx-auto min-h-screen bg-white text-gray-900">
-            <div className="flex justify-between items-center mb-8 border-b pb-4">
-                <h1 className="text-3xl font-bold">Song Library</h1>
-                <div className="flex gap-4">
-                    <label className="px-4 py-2 bg-gray-200 rounded cursor-pointer hover:bg-gray-300">
-                        Import
-                        <input type="file" className="hidden" accept=".json,.mcs,.yaml,.yml" onChange={handleImport} />
-                    </label>
-                    <button onClick={handleExportAll} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
-                        Backup Library
-                    </button>
-                    <Link href="/editor" className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-500">
-                        + New Song
-                    </Link>
-                    <Link href="/" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">
-                        Back to Viewer
-                    </Link>
+        <div className="p-8 max-w-5xl mx-auto h-full overflow-y-auto" style={{ backgroundColor: theme.colors.background, color: theme.colors.text_primary }}>
+            <div className="flex justify-between items-center mb-8 border-b pb-4" style={{ borderColor: theme.colors.section_header }}>
+                <h1 className="text-3xl font-bold">📚 Song Library</h1>
+                {/* Actions are now in the Header Nav, but we'll keep list-specific ones like bulk export if we had them or filter inputs here later */}
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {songs.length} song{songs.length !== 1 ? 's' : ''}
                 </div>
             </div>
 
             {songs.length === 0 ? (
-                <div className="text-center py-20 text-gray-500">
-                    <p className="text-xl">Your library is empty.</p>
-                    <p className="mt-2">Create a new song or import a backup.</p>
+                <div className="text-center py-20 text-gray-500 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-dashed dark:border-gray-700">
+                    <p className="text-xl font-medium">Your library is empty.</p>
+                    <p className="mt-2 text-sm">Create a new song using the "New Song" menu or import a backup.</p>
                 </div>
             ) : (
-                <div className="grid gap-4">
+                <div className="grid gap-3">
                     {songs.map(song => (
-                        <div key={song.id} className="border p-4 rounded flex justify-between items-center hover:bg-gray-50 transition">
-                            <div>
-                                <h3 className="font-bold text-lg">{song.title}</h3>
-                                <div className="text-gray-600">{song.artist}</div>
-                                <div className="text-xs text-gray-400 mt-1">
-                                    Updated: {new Date(song.updatedAt).toLocaleDateString()}
+                        <div key={song.id}
+                            className="border p-4 rounded-lg flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-800 transition shadow-sm bg-white dark:bg-gray-900"
+                            style={{ borderColor: theme.colors.section_header }}
+                        >
+                            <div className="flex-1 cursor-pointer" onClick={() => handleOpen(song.id)}>
+                                <h3 className="font-bold text-lg" style={{ color: theme.colors.text_primary }}>{song.title}</h3>
+                                <div style={{ color: theme.colors.text_secondary }}>{song.artist}</div>
+                                <div className="text-xs mt-1 opacity-60">
+                                    Last Updated: {new Date(song.updatedAt).toLocaleDateString()}
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <button onClick={() => handleOpen(song.id)} className="px-3 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">
-                                    Open
+                                <button onClick={() => handleOpen(song.id)} className="px-3 py-1.5 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 dark:hover:bg-blue-900/30 text-sm font-medium">
+                                    👁️ Open
                                 </button>
-                                <button onClick={() => handleEdit(song.id)} className="px-3 py-1 border border-gray-400 text-gray-600 rounded hover:bg-gray-100">
-                                    Edit
+                                <button onClick={() => handleEdit(song.id)} className="px-3 py-1.5 border border-gray-400 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium">
+                                    ✏️ Edit
                                 </button>
-                                <button onClick={() => handleDelete(song.id)} className="px-3 py-1 text-red-600 hover:bg-red-50 rounded">
-                                    Delete
+                                <button onClick={() => handleDelete(song.id)} className="px-3 py-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded text-sm font-medium">
+                                    🗑️ Delete
                                 </button>
                             </div>
                         </div>

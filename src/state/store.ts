@@ -2,14 +2,19 @@
 import { create } from 'zustand';
 
 import { songStorage } from '@/src/services/storage';
+import { DEFAULT_THEME, DARK_THEME } from "@/src/components/viewer/themes";
+import { Theme } from "@/src/mcs-core/model";
 
 interface AppState {
   activeYaml: string;
   activeSongId: string | undefined; // Undefined = New/Unsaved
+  theme: Theme;
+  lastSavedYaml: string;
   setActiveYaml: (yaml: string) => void;
   loadSong: (id: string) => Promise<void>;
   saveCurrentSong: () => Promise<void>;
   resetSong: () => void;
+  toggleTheme: () => void;
 }
 
 const DEFAULT_YAML = `schema_version: "1.0.0"
@@ -40,12 +45,19 @@ sections:
 export const useAppStore = create<AppState>((set, get) => ({
   activeYaml: DEFAULT_YAML,
   activeSongId: undefined,
+  theme: DEFAULT_THEME,
+  lastSavedYaml: DEFAULT_YAML,
   setActiveYaml: (yaml) => set({ activeYaml: yaml }),
+
+  toggleTheme: () => {
+    const current = get().theme;
+    set({ theme: current.name === "Dark Mode" ? DEFAULT_THEME : DARK_THEME });
+  },
 
   loadSong: async (id) => {
     const record = await songStorage.getSong(id);
     if (record) {
-      set({ activeYaml: record.yaml, activeSongId: record.id });
+      set({ activeYaml: record.yaml, activeSongId: record.id, lastSavedYaml: record.yaml });
     } else {
       console.error("Song not found:", id);
     }
@@ -54,12 +66,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   saveCurrentSong: async () => {
     const { activeYaml, activeSongId } = get();
     const newId = await songStorage.saveSong(activeYaml, activeSongId);
-    set({ activeSongId: newId });
+    set({ activeSongId: newId, lastSavedYaml: activeYaml });
   },
 
   resetSong: () => {
-    set({
-      activeYaml: `schema_version: "1.0.0"
+    const defaultYaml = `schema_version: "1.0.0"
 metadata:
   title: "New Song"
   artist: "Unknown"
@@ -68,8 +79,11 @@ sections:
     type: "verse"
     lines:
       - "Start [C]typing here..."
-`,
-      activeSongId: undefined
+`;
+    set({
+      activeYaml: defaultYaml,
+      activeSongId: undefined,
+      lastSavedYaml: defaultYaml
     });
   }
 }));

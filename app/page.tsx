@@ -18,8 +18,8 @@ export default function Home() {
   const router = useRouter();
   const activeYaml = useAppStore((state) => state.activeYaml);
   const setActiveYaml = useAppStore((state) => state.setActiveYaml);
+  const theme = useAppStore((state) => state.theme);
 
-  const [selectedThemeName, setSelectedThemeName] = useState<keyof typeof Themes>("Light Mode");
   const [parsedSong, setParsedSong] = useState(MCSParser.parse(activeYaml)); // Initial state
   const [parseError, setParseError] = useState<string | null>(null);
 
@@ -31,57 +31,37 @@ export default function Home() {
       setParseError(null);
     } catch (e: any) {
       setParseError(e.message);
-      // Fallback: We don't update parsedSong, so it keeps the last valid version (if any)
-      // or we could show an error state.
     }
   }, [activeYaml]);
 
   const handleOpenEditor = () => {
-    // No need to setActiveYaml(sample) anymore, as the store IS the source of truth.
     router.push("/editor");
   };
 
   const handleCreateNew = () => {
-    setActiveYaml(`schema_version: "1.0.0"
-metadata:
-  title: "New Song"
-  artist: "Unknown"
-sections:
-  - id: "s1"
-    type: "verse"
-    lines:
-      - "Start [C]typing here..."
-`);
+    useAppStore.getState().resetSong();
     router.push("/editor");
   }
 
   return (
-    <div className="flex flex-col gap-8 p-8 min-h-screen" style={{
-      backgroundColor: Themes[selectedThemeName].colors.background
+    <div className="flex flex-col gap-8 p-8 h-full overflow-y-auto" style={{
+      backgroundColor: theme.colors.background,
+      color: theme.colors.text_primary
     }}>
-      <div className="flex justify-between items-center border-b pb-4 mb-4" style={{
-        borderColor: Themes[selectedThemeName].colors.section_header,
-        color: Themes[selectedThemeName].colors.text_primary
+      <div className="flex justify-between items-center bg-gray-100 p-6 rounded-lg dark:bg-gray-800" style={{
+        borderColor: theme.colors.section_header,
       }}>
-        <h1 className="text-2xl font-bold">MCS Viewer</h1>
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Welcome to Modern Chord Charts</h1>
+          <p className="text-gray-600 dark:text-gray-400">View, Edit, and Manage your song library with ease.</p>
+        </div>
 
         <div className="flex gap-4 items-center">
-          {/* Theme Selector */}
-          <select
-            value={selectedThemeName}
-            onChange={(e) => setSelectedThemeName(e.target.value as any)}
-            className="px-3 py-2 rounded border bg-white text-black text-sm"
-          >
-            {Object.keys(Themes).map(name => (
-              <option key={name} value={name}>{name}</option>
-            ))}
-          </select>
-
-          <button onClick={handleOpenEditor} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500">
-            Edit Song
+          <button onClick={handleOpenEditor} className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-500 transition-colors font-medium">
+            Edit Current Song
           </button>
-          <button onClick={handleCreateNew} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-500">
-            New Song
+          <button onClick={handleCreateNew} className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-500 transition-colors font-medium">
+            + Create New Song
           </button>
         </div>
       </div>
@@ -94,7 +74,9 @@ sections:
       )}
 
       {/* Single Viewer */}
-      <SongViewer song={parsedSong} theme={Themes[selectedThemeName]} />
+      <div className="border rounded-xl shadow-sm overflow-hidden" style={{ borderColor: theme.colors.section_header }}>
+        <SongViewer song={parsedSong} theme={theme} />
+      </div>
     </div>
   );
 }

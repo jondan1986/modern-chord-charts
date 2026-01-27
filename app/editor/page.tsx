@@ -8,6 +8,7 @@ import { DEFAULT_THEME, DARK_THEME } from "@/src/components/viewer/themes";
 import { Song, Theme } from "@/src/mcs-core/model";
 import Link from "next/link";
 import { useAppStore } from "@/src/state/store";
+import { useRouter } from "next/navigation";
 
 export default function EditorPage() {
     // Global Store
@@ -15,11 +16,13 @@ export default function EditorPage() {
     const setActiveYaml = useAppStore((state) => state.setActiveYaml);
     const saveCurrentSong = useAppStore((state) => state.saveCurrentSong);
     const activeSongId = useAppStore((state) => state.activeSongId);
+    const resetSong = useAppStore((state) => state.resetSong);
+    const router = useRouter();
 
     // Local State
     const [parsedSong, setParsedSong] = useState<Song | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
+    const theme = useAppStore((state) => state.theme);
 
     // Initial Load from Store
     useEffect(() => {
@@ -47,43 +50,25 @@ export default function EditorPage() {
         }
     };
 
-    const toggleTheme = () => {
-        setTheme(prev => prev.name === "Dark Mode" ? DEFAULT_THEME : DARK_THEME);
-    }
+
 
     return (
-        <div className="flex flex-col h-screen overflow-hidden">
-            {/* Toolbar */}
-            <div className="bg-gray-800 text-white p-4 flex justify-between items-center shrink-0">
-                <div className="font-bold text-xl">MCS Editor</div>
-                <div className="flex gap-4 items-center">
-                    {error && (
-                        <div className="text-red-400 text-sm font-mono px-2 animate-pulse">
-                            Syntax Error: {error.split('\n')[0]}
-                        </div>
-                    )}
-                    <Link href="/library" className="px-3 py-1 bg-yellow-600 rounded hover:bg-yellow-500 text-sm">
-                        Library
-                    </Link>
-                    <button onClick={() => saveCurrentSong()} className="px-3 py-1 bg-green-600 rounded hover:bg-green-500 text-sm font-bold">
-                        {activeSongId ? "Save" : "Save As..."}
-                    </button>
-
-                    <button onClick={toggleTheme} className="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 border border-gray-600 text-sm">
-                        Theme: {theme.name}
-                    </button>
-                    <Link href="/" className="px-3 py-1 bg-blue-600 rounded hover:bg-blue-500 text-sm">
-                        Back to Home
-                    </Link>
-                </div>
-            </div>
-
+        <div className="flex flex-col h-full overflow-hidden" style={{ backgroundColor: theme.colors.background }}>
             {/* Main Content */}
             <div className="flex flex-1 overflow-hidden">
                 {/* Editor Pane (Left) */}
-                <div className="w-1/2 flex flex-col border-r border-gray-300 relative">
+                <div className="w-1/2 flex flex-col border-r relative" style={{ borderColor: theme.colors.section_header }}>
+                    {error && (
+                        <div className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-300 p-2 text-xs font-mono border-b border-red-200">
+                            Syntax Error: {error.split('\n')[0]}
+                        </div>
+                    )}
                     <textarea
-                        className="flex-1 w-full h-full p-4 font-mono text-sm resize-none focus:outline-none bg-gray-50 text-gray-900 leading-6"
+                        className="flex-1 w-full h-full p-4 font-mono text-sm resize-none focus:outline-none leading-6 dark:bg-gray-900"
+                        style={{
+                            backgroundColor: theme.name === 'Dark Mode' ? '#1a1a1a' : '#f9fafb',
+                            color: theme.colors.text_primary
+                        }}
                         value={activeYaml}
                         onChange={(e) => handleYamlChange(e.target.value)}
                         spellCheck={false}
@@ -91,7 +76,7 @@ export default function EditorPage() {
                 </div>
 
                 {/* Preview Pane (Right) */}
-                <div className="w-1/2 overflow-y-auto bg-white relative">
+                <div className="w-1/2 overflow-y-auto relative" style={{ backgroundColor: theme.colors.background }}>
                     {parsedSong ? (
                         <div className="transform scale-90 origin-top-left p-4">
                             <SongViewer song={parsedSong} theme={theme} />
