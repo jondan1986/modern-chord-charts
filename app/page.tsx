@@ -70,6 +70,17 @@ export default function LibraryPage() {
                                 <button onClick={() => handleOpen(song.id)} className="px-3 py-1.5 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 dark:hover:bg-blue-900/30 text-sm font-medium transition-colors">
                                     📂 Open
                                 </button>
+                                <button onClick={() => {
+                                    const blob = new Blob([song.yaml], { type: "text/plain" });
+                                    const url = URL.createObjectURL(blob);
+                                    const a = document.createElement("a");
+                                    a.href = url;
+                                    a.download = `${song.title.replace(/[^a-z0-9]/gi, '_')}.mcs`;
+                                    a.click();
+                                    URL.revokeObjectURL(url);
+                                }} className="px-3 py-1.5 border border-gray-400 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium" title="Export Song">
+                                    📤
+                                </button>
                                 <button onClick={() => handleEdit(song.id)} className="px-3 py-1.5 border border-gray-400 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium">
                                     ✏️ Edit
                                 </button>

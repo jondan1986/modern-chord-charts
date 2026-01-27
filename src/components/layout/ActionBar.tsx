@@ -63,6 +63,17 @@ export default function ActionBar() {
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
+    const handleExportLibrary = async () => {
+        const json = await songStorage.exportLibrary();
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `mcs_library_backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
     // Render content based on path
     const renderContent = () => {
         if (pathname === '/viewer') {
@@ -82,6 +93,9 @@ export default function ActionBar() {
             return (
                 <>
                     <input type="file" ref={fileInputRef} className="hidden" accept=".json,.mcs,.yaml,.yml" onChange={handleImport} />
+                    <button onClick={handleExportLibrary} className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition shadow-sm font-medium text-sm dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+                        📤 Export Library
+                    </button>
                     <button onClick={triggerImport} className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition shadow-sm font-medium text-sm dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
                         📥 Import
                     </button>
