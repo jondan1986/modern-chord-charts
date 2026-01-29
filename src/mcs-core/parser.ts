@@ -10,7 +10,14 @@ export class MCSParser {
    */
   static parse(yamlContent: string): Song {
     // 1. Parse YAML
-    const rawData = YAML.parse(yamlContent);
+    let rawData;
+    try {
+      rawData = YAML.parse(yamlContent);
+    } catch (e: any) {
+      // Attach a specific type or code to identify YAML syntax errors
+      e.code = "YAML_SYNTAX_ERROR";
+      throw e;
+    }
 
     // 2. Validate basic structure using Zod (before expansion)
     // We parse strict vs compact loosely at this stage to allow Zod to pass valid strings
@@ -19,7 +26,22 @@ export class MCSParser {
 
     if (!validation.success) {
       console.error("Validation Error:", validation.error.format());
-      throw new Error(`Invalid MCS Format: ${validation.error.message}`);
+      // Zod v3 uses .issues typically, or .errors. Casting to avoid version conflict noise.
+      const zodErr = validation.error as any;
+      const firstError = zodErr.errors?.[0] || zodErr.issues?.[0];
+
+      let msg = "Invalid MCS Format";
+      if (firstError) {
+        const path = firstError.path?.join('.') || "root";
+        msg = `Invalid MCS Format: ${path} - ${firstError.message}`;
+      } else {
+        msg = `Invalid MCS Format: ${validation.error.message}`;
+      }
+
+      const err = new Error(msg);
+      (err as any).code = "ZOD_VALIDATION_ERROR";
+      (err as any).zodError = validation.error;
+      throw err;
     }
 
     const song = validation.data as Song;
@@ -46,7 +68,7 @@ export class MCSParser {
    */
   static parseCompactLine(text: string): Line {
     const segments: LineSegment[] = [];
-    
+
     // Regex to capture [Chord] blocks and surrounding text
     // Matches either a chord block `[...]` or any text that isn't `[`
     const tokens = text.split(/(\[.*?\])/g);
@@ -62,17 +84,17 @@ export class MCSParser {
         // It's a chord.
         // If we have accumulated lyrics for a previous segment (no chord), push it.
         // OR if this is a chord that splits a word, we start a new segment.
-        
+
         if (currentLyric || isFirst) {
-           if (currentLyric || (isFirst && !currentChord && !currentLyric)) {
-             // Push previous segment
-             segments.push({
-               lyric: currentLyric,
-               chord: currentChord || undefined, // undefined if null
-             });
-           }
+          if (currentLyric || (isFirst && !currentChord && !currentLyric)) {
+            // Push previous segment
+            segments.push({
+              lyric: currentLyric,
+              chord: currentChord || undefined, // undefined if null
+            });
+          }
         }
-        
+
         // Start new segment
         // Extract chord content (remove brackets)
         currentChord = token.slice(1, -1);
@@ -90,7 +112,7 @@ export class MCSParser {
       lyric: currentLyric,
       chord: currentChord || undefined,
     });
-    
+
     // Filter out initial empty segment if it was just a placeholder
     // (Optimization: clean up empty segments that aren't meaningful)
     const cleanedSegments = segments.filter(seg => seg.lyric !== "" || seg.chord !== undefined);

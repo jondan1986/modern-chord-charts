@@ -10,11 +10,23 @@ interface AppState {
   activeSongId: string | undefined; // Undefined = New/Unsaved
   theme: Theme;
   lastSavedYaml: string;
+
+  // Setlist Mode
+  activeSetlistId: string | null;
+  activeSetlistSongs: string[]; // List of song IDs in order
+  currentSetlistIndex: number;
+
   setActiveYaml: (yaml: string) => void;
   loadSong: (id: string) => Promise<void>;
   saveCurrentSong: () => Promise<void>;
   resetSong: () => void;
   toggleTheme: () => void;
+
+  // Setlist Actions
+  startSetlist: (id: string, songIds: string[]) => Promise<void>;
+  nextSetlistSong: () => Promise<void>;
+  prevSetlistSong: () => Promise<void>;
+  exitSetlist: () => void;
 }
 
 const DEFAULT_YAML = `schema_version: "1.0.0"
@@ -47,6 +59,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   activeSongId: undefined,
   theme: DEFAULT_THEME,
   lastSavedYaml: DEFAULT_YAML,
+  activeSetlistId: null,
+  activeSetlistSongs: [],
+  currentSetlistIndex: -1,
+
   setActiveYaml: (yaml) => set({ activeYaml: yaml }),
 
   toggleTheme: () => {
@@ -59,6 +75,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (record) {
       set({ activeYaml: record.yaml, activeSongId: record.id, lastSavedYaml: record.yaml });
     } else {
+      // If we fail to load a song in setlist mode, we might want to handle it, but for now just error
       console.error("Song not found:", id);
     }
   },
@@ -83,7 +100,39 @@ sections:
     set({
       activeYaml: defaultYaml,
       activeSongId: undefined,
-      lastSavedYaml: defaultYaml
+      lastSavedYaml: defaultYaml,
+      activeSetlistId: null, // Reset exits setlist mode
+      activeSetlistSongs: [],
+      currentSetlistIndex: -1
     });
+  },
+
+  startSetlist: async (id, songIds) => {
+    if (songIds.length === 0) return;
+    set({ activeSetlistId: id, activeSetlistSongs: songIds, currentSetlistIndex: 0 });
+    // Load first song
+    await get().loadSong(songIds[0]);
+  },
+
+  nextSetlistSong: async () => {
+    const { activeSetlistSongs, currentSetlistIndex, loadSong } = get();
+    if (currentSetlistIndex < activeSetlistSongs.length - 1) {
+      const nextIndex = currentSetlistIndex + 1;
+      set({ currentSetlistIndex: nextIndex });
+      await loadSong(activeSetlistSongs[nextIndex]);
+    }
+  },
+
+  prevSetlistSong: async () => {
+    const { activeSetlistSongs, currentSetlistIndex, loadSong } = get();
+    if (currentSetlistIndex > 0) {
+      const prevIndex = currentSetlistIndex - 1;
+      set({ currentSetlistIndex: prevIndex });
+      await loadSong(activeSetlistSongs[prevIndex]);
+    }
+  },
+
+  exitSetlist: () => {
+    set({ activeSetlistId: null, activeSetlistSongs: [], currentSetlistIndex: -1 });
   }
 }));

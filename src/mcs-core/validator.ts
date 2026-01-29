@@ -41,12 +41,18 @@ export const SectionSchema = z.object({
     lines: z.array(z.union([z.string(), LineSchema])), // Supports both Compact (string) and Strict (object)
 });
 
+export const ArrangementSchema = z.object({
+    name: z.string(),
+    order: z.array(z.string()),
+});
+
 export const SongSchema = z.object({
     schema_version: z.string().default("1.0.0"),
     metadata: MetadataSchema,
     options: OptionsSchema.optional(),
     definitions: z.array(ChordDefinitionSchema).optional(),
     sections: z.array(SectionSchema),
+    arrangements: z.array(ArrangementSchema).optional(),
 });
 
 // Style Schema

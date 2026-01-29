@@ -3,12 +3,18 @@
 
 // -- Content Model --
 
+export interface Arrangement {
+  name: string;
+  order: string[]; // List of Section IDs by reference
+}
+
 export interface Song {
   schema_version: string;
   metadata: SongMetadata;
   options?: SongOptions;
   definitions?: ChordDefinition[];
   sections: Section[];
+  arrangements?: Arrangement[];
 }
 
 export interface SongMetadata {
