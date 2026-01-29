@@ -14,6 +14,7 @@
 - [ ] Implement a special section type that is music only and makes it easy to see the chords according to the time signature. The viewer should display the chords in a way that is easy to read and understand. The editor should allow the user to edit the chords in a way that is easy to read and understand. there should be a way to graphically represent the bars and beats in the music only section.
 - [ ] Implement a feature that allows the user to export the song to a PDF file. The PDF should be formatted in a way that is easy to read and understand. The PDF should be formatted in a way that is easy to print.
 - [ ] Implement a feature that allows the user to export the song to a ChordPro file. The ChordPro should be formatted in a way that is easy to read and understand. The ChordPro should be formatted in a way that is easy to print.
+- [ ] There is a Chord Formatting issue that occurs when chords are spaced closely together. If the chords are right next to each other than add at least one space between them and adjust the lyrics to be properly aligned.
 
 ## Complete
 
