@@ -119,7 +119,10 @@ export class ChordProConverter {
 
         yaml += "\nsections:\n";
         sections.forEach((sec: any) => {
-            yaml += `  - label: "${sec.label}"\n`;
+            // Generate a unique ID if not present (which it won't be from ChordPro)
+            const id = crypto.randomUUID();
+            yaml += `  - id: "${id}"\n`;
+            yaml += `    label: "${sec.label}"\n`;
             // try to map type if standard
             let type = "other";
             const l = sec.label.toLowerCase();
@@ -128,6 +131,9 @@ export class ChordProConverter {
             else if (l.includes("bridge")) type = "bridge";
             else if (l.includes("intro")) type = "intro";
             else if (l.includes("outro")) type = "outro";
+            else if (l.includes("tag")) type = "tag";
+            else if (l.includes("instrumental")) type = "instrumental";
+            else if (l.includes("hook")) type = "hook";
 
             yaml += `    type: "${type}"\n`;
             yaml += `    lines:\n`;
