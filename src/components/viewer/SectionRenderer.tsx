@@ -26,6 +26,11 @@ export const SectionRenderer: React.FC<Props> = ({ section, theme }) => {
             {/* Section Label */}
             <div style={headerStyle}>
                 {section.label}
+                {section.bars && (
+                    <span className="ml-2 px-1.5 py-0.5 text-[0.7em] border rounded opacity-70" style={{ borderColor: theme.colors.section_header }}>
+                        {section.bars} bars
+                    </span>
+                )}
             </div>
 
             {/* Lines */}

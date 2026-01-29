@@ -46,6 +46,7 @@ export interface Section {
   id: string;
   type: SectionType;
   label: string;
+  bars?: number;
   lines: (Line | string)[]; // Can be strict Line objects or compact strings
 }
 

@@ -59,6 +59,23 @@ sections:
             });
         });
 
+        it('parses section bar counts', () => {
+            const yaml = `
+schema_version: "1.0.0"
+metadata:
+  title: "Bars Test"
+  artist: "Artist"
+sections:
+  - id: "v1"
+    type: "verse"
+    bars: 4
+    lines:
+      - "Test"
+`;
+            const song = MCSParser.parse(yaml);
+            expect(song.sections[0].bars).toBe(4);
+        });
+
         it('throws error on invalid YAML', () => {
             const yaml = `
 schema_version: "1.0.0"
