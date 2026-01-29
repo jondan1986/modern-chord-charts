@@ -11,7 +11,7 @@ import { useAppStore } from "@/src/state/store";
 import { useRouter } from "next/navigation";
 import Editor from "@monaco-editor/react";
 import { InsertSectionModal } from "@/src/components/editor/InsertSectionModal";
-import { EditMetadataModal } from "@/src/components/editor/EditMetadataModal";
+import { EditMetadataModal } from "@/src/components/modals/EditMetadataModal";
 import { ManageArrangementsModal } from "@/src/components/editor/ManageArrangementsModal";
 import { parseDocument } from "yaml";
 

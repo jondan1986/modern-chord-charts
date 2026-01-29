@@ -8,6 +8,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { useAppStore } from "@/src/state/store";
 import { useRouter } from "next/navigation";
+import { EditMetadataModal } from "@/src/components/modals/EditMetadataModal";
+import { parseDocument } from "yaml";
 
 const Themes = {
   "Light Mode": DEFAULT_THEME,
@@ -56,6 +58,50 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [activeSetlistId, nextSetlistSong, prevSetlistSong]);
 
+  // Metadata Editing
+  const [isMetadataModalOpen, setIsMetadataModalOpen] = useState(false);
+
+  const handleMetadataSave = (newMetadata: any) => {
+    try {
+      // We need to update the YAML with the new metadata
+      // Since we don't have the "parseDocument" from 'yaml' here easily without importing it,
+      // and we want to keep logic consistent.
+
+      // Let's import 'yaml' dynamically or at top level.
+      // For now, I'll use the store's activeYaml.
+
+      const doc = parseDocument(activeYaml);
+      if (!doc.has("metadata")) {
+        doc.set("metadata", {});
+      }
+
+      // Update fields
+      Object.keys(newMetadata).forEach(key => {
+        const val = newMetadata[key];
+        if (val !== undefined && val !== "") {
+          doc.setIn(["metadata", key], val);
+        } else {
+          if (val === undefined) {
+            doc.deleteIn(["metadata", key]);
+          } else {
+            doc.setIn(["metadata", key], val);
+          }
+        }
+      });
+
+      const newYaml = doc.toString();
+      // Update Store (which updates activeYaml -> triggers useEffect -> updates parsedSong)
+      setActiveYaml(newYaml);
+      // Also save to IDB if we have an active song ID
+      // useAppStore.getState().saveCurrentSong(); // Optional: Auto-save? user might want to explicitly save. 
+      // Editors usually auto-update state but manual save to disk.
+
+    } catch (e: any) {
+      console.error("Failed to update metadata", e);
+      alert("Failed to update metadata");
+    }
+  };
+
   return (
     <div className="flex flex-col gap-8 p-8 h-full overflow-y-auto relative" style={{
       backgroundColor: theme.colors.background,
@@ -102,8 +148,20 @@ export default function Home() {
 
       {/* Single Viewer */}
       <div className="border rounded-xl shadow-sm overflow-hidden min-h-[500px]" style={{ borderColor: theme.colors.section_header }}>
-        <SongViewer song={parsedSong} theme={theme} />
+        <SongViewer
+          song={parsedSong}
+          theme={theme}
+          onEditMetadata={() => setIsMetadataModalOpen(true)}
+        />
       </div>
+
+      {/* Edit Metadata Modal */}
+      <EditMetadataModal
+        isOpen={isMetadataModalOpen}
+        onClose={() => setIsMetadataModalOpen(false)}
+        initialMetadata={parsedSong?.metadata}
+        onSave={handleMetadataSave}
+      />
     </div>
   );
 }

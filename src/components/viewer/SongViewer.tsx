@@ -8,9 +8,10 @@ import { DEFAULT_THEME } from "./themes";
 interface Props {
     song: Song;
     theme?: Theme;
+    onEditMetadata?: () => void;
 }
 
-export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME }) => {
+export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEditMetadata }) => {
     const [activeArrangementIdx, setActiveArrangementIdx] = React.useState<number | null>(null);
 
     // Reset arrangement selection if song changes
@@ -24,8 +25,6 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME }) => 
             const arrangement = song.arrangements[activeArrangementIdx];
             return arrangement.order.map((sectionId, index) => {
                 const section = song.sections.find(s => s.id === sectionId);
-                // If section not found (broken link), distinct handling or skip? 
-                // We'll return it if found, or create a placeholder error section to be helpful.
                 return section ? { ...section, uniqueKey: `${section.id}-${index}` } : null;
             }).filter(Boolean) as (typeof song.sections[0] & { uniqueKey: string })[];
         }
@@ -45,11 +44,13 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME }) => 
         fontSize: "2em",
         fontWeight: "bold",
         marginBottom: "0.25em",
+        lineHeight: "1.2",
     };
 
     const metaStyle: React.CSSProperties = {
         color: theme.colors.text_secondary,
-        marginBottom: "2rem",
+        marginBottom: "1.5rem",
+        fontSize: "0.9em",
     };
 
     const bodyStyle: React.CSSProperties = {
@@ -63,10 +64,45 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME }) => 
             {/* Header */}
             <div className="mb-8 border-b pb-4" style={{ borderColor: theme.colors.section_header }}>
                 <div className="flex justify-between items-start">
-                    <div>
-                        <h1 style={titleStyle}>{song.metadata.title}</h1>
-                        <div style={metaStyle}>
-                            {song.metadata.artist} • Key: {song.metadata.key || "N/A"} • Tempo: {song.metadata.tempo || "N/A"}
+                    <div className="flex-1">
+                        <div className="flex items-center gap-3 group">
+                            <h1 style={titleStyle}>{song.metadata.title}</h1>
+                            {onEditMetadata && (
+                                <button
+                                    onClick={onEditMetadata}
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-blue-600"
+                                    title="Edit Metadata"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                                </button>
+                            )}
+                        </div>
+
+                        <div style={metaStyle} className="space-y-1">
+                            <div className="text-lg font-medium">{song.metadata.artist}</div>
+
+                            <div className="flex flex-wrap gap-x-4 gap-y-1 opacity-80">
+                                {song.metadata.key && <span><span className="opacity-60">Key:</span> {song.metadata.key}</span>}
+                                {song.metadata.tempo && <span><span className="opacity-60">Tempo:</span> {song.metadata.tempo} bpm</span>}
+                                {song.metadata.time_signature && <span><span className="opacity-60">Time:</span> {song.metadata.time_signature}</span>}
+                            </div>
+
+                            {(song.metadata.ccli || song.metadata.copyright) && (
+                                <div className="text-xs opacity-60 mt-1">
+                                    {song.metadata.ccli && <span className="mr-3">CCLI: {song.metadata.ccli}</span>}
+                                    {song.metadata.copyright && <span>© {song.metadata.copyright}</span>}
+                                </div>
+                            )}
+
+                            {song.metadata.themes && song.metadata.themes.length > 0 && (
+                                <div className="flex gap-2 mt-1">
+                                    {song.metadata.themes.map(t => (
+                                        <span key={t} className="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-xs border dark:border-gray-700">
+                                            {t}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
 

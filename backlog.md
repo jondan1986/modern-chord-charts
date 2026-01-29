@@ -19,4 +19,5 @@
 - [x] The arrangements should be selectable in the Viewer.
 - [x] Build a setlist feature that allows the user to create and manage a setlist of songs. The setlist can be saved and loaded. The setlist can be shared with other users.
 - [x] Start a setlist session from the setlist detail page and navigate between songs using left/right arrows in the Viewer.
+- [x] Implement a system that tracks the the count of bars in each section. This should be displayed in the viewer and allow the user to edit it. This should be validated using Zod.  This can later be used for track playback features.
 - [x] Ctrl+S in the editor should save the song to IndexedDB. Ctrl+O should open a file picker to load a song from IndexedDB. Ctrl+Shift+S should save the song "As New" to IndexedDB. Ctrl+Shift+O should open a file picker to load a song from IndexedDB. Ctrl+Z should undo the last change. Ctrl+Y should redo the last change.
