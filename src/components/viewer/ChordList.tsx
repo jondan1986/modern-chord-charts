@@ -10,7 +10,7 @@ interface Props {
 
 export const ChordList: React.FC<Props> = ({ song, theme }) => {
     const [instrument, setInstrument] = useState<Instrument>('guitar');
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
 
     // Extract unique chords
     const chords = React.useMemo(() => {

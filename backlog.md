@@ -2,9 +2,9 @@
 
 ## Not Complete
 
-- [ ] All the available metadata should be displayed in the viewer. The metadata should be editable in the viewer.
-- [ ] Chord Diagrams should automatically be displayed in the viewer. The available instruments that can be displayed should be configurable. The 3 default instruments should be guitar, ukulele, and piano.
-- [ ] Chord Diagrams should be displayed in the editor. The chord diagrams should be editable in the editor.
+- [x] All the available metadata should be displayed in the viewer. The metadata should be editable in the viewer.
+- [x] Chord Diagrams (Viewer): Chord Diagrams should automatically be displayed in the viewer. The available instruments that can be displayed should be configurable. The 3 default instruments should be guitar, ukulele, and piano.
+- [x] Chord Diagrams (Editor): Chord Diagrams should be displayed in the editor. The chord diagrams should be editable in the editor.
 - [ ] Implement the theme editor and scope out all the different themeable properties. It would be nice to be able to follow Tailwind's theme system and allow for things like column count, font size, autofit for Letter or A4 printouts, etc. There should options for themeable section types (Verse, Chorus, Bridge, etc.) and section borders with dropshadows, etc. but still allow the user to edit the themeable properties in the theme editor.  The Viewer should be able to let the user select a theme from a list of themes. The Editor should be able to let the user select a theme from a list of themes.
 - [ ] ChordPro Import feature that reads the traditional ChordPro format and parses it and converts it to our new "MCS" format.
 - [ ] Modal Windows Text Input fields have VERY light colored text that is difficult to read we should make them easily readable in box light mode (Dark mode renders fine)
