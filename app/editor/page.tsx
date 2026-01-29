@@ -230,17 +230,19 @@ export default function EditorPage() {
 
 
     return (
-        <div className="flex flex-col h-full overflow-hidden" style={{ backgroundColor: theme.colors.background }}>
+        <div
+            className="flex flex-col h-full overflow-hidden bg-white dark:bg-gray-900"
+        >
             {/* Main Content */}
             <div className="flex flex-1 overflow-hidden">
                 {/* Editor Pane (Left) */}
-                <div className="w-1/2 flex flex-col border-r relative" style={{ borderColor: theme.colors.section_header }}>
+                <div
+                    className="w-1/2 flex flex-col border-r relative border-gray-400 dark:border-gray-600"
+                >
                     {/* Toolbar */}
-                    <div className="flex items-center gap-2 p-2 border-b overflow-x-auto"
-                        style={{
-                            backgroundColor: theme.colors.background,
-                            borderColor: theme.colors.section_header
-                        }}>
+                    <div
+                        className="flex items-center gap-2 p-2 border-b overflow-x-auto bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-600"
+                    >
                         <button
                             onClick={() => setIsSectionModalOpen(true)}
                             className="px-2 py-1 text-xs border rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition font-medium text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900"
@@ -269,9 +271,9 @@ export default function EditorPage() {
                         </div>
                     )}
 
-                    <div className="flex-1 w-full h-full relative" style={{
-                        backgroundColor: theme.name === 'Dark Mode' ? '#1e1e1e' : '#fffffe'
-                    }}>
+                    <div
+                        className="flex-1 w-full h-full relative bg-white dark:bg-[#1e1e1e]"
+                    >
                         <Editor
                             height="100%"
                             defaultLanguage="yaml"
@@ -296,7 +298,9 @@ export default function EditorPage() {
                 </div>
 
                 {/* Preview Pane (Right) */}
-                <div className="w-1/2 overflow-y-auto relative" style={{ backgroundColor: theme.colors.background }}>
+                <div
+                    className="w-1/2 overflow-y-auto relative bg-white dark:bg-gray-900"
+                >
                     {parsedSong ? (
                         <div className="transform scale-90 origin-top-left p-4">
                             <SongViewer song={parsedSong} theme={theme} />

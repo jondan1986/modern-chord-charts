@@ -103,10 +103,12 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col gap-8 p-8 h-full overflow-y-auto relative" style={{
-      backgroundColor: theme.colors.background,
-      color: theme.colors.text_primary
-    }}>
+    <div
+      className={`flex flex-col gap-8 p-8 h-full overflow-y-auto relative transition-colors duration-200 ${theme.name === "Dark Mode"
+        ? "bg-gray-900 text-gray-50"
+        : "bg-white text-gray-800"
+        }`}
+    >
 
       {/* Setlist Controls Overlay */}
       {activeSetlistId && (
@@ -147,7 +149,10 @@ export default function Home() {
       )}
 
       {/* Single Viewer */}
-      <div className="border rounded-xl shadow-sm overflow-hidden min-h-[500px]" style={{ borderColor: theme.colors.section_header }}>
+      <div
+        className={`border rounded-xl shadow-sm overflow-hidden min-h-[500px] ${theme.name === "Dark Mode" ? "border-gray-600" : "border-gray-400"
+          }`}
+      >
         <SongViewer
           song={parsedSong}
           theme={theme}

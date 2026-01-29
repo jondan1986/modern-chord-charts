@@ -31,42 +31,22 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
         return song.sections.map(s => ({ ...s, uniqueKey: s.id }));
     }, [song, activeArrangementIdx]);
 
-    // Main Container Style
-    const containerStyle: React.CSSProperties = {
-        backgroundColor: theme.colors.background,
-        color: theme.colors.text_primary,
-        fontFamily: theme.typography.font_family_lyrics,
-        minHeight: "100vh",
-        padding: "2rem",
-    };
-
-    const titleStyle: React.CSSProperties = {
-        fontSize: "2em",
-        fontWeight: "bold",
-        marginBottom: "0.25em",
-        lineHeight: "1.2",
-    };
-
-    const metaStyle: React.CSSProperties = {
-        color: theme.colors.text_secondary,
-        marginBottom: "1.5rem",
-        fontSize: "0.9em",
-    };
-
-    const bodyStyle: React.CSSProperties = {
-        display: "grid",
-        gridTemplateColumns: theme.layout.two_column ? "repeat(auto-fit, minmax(300px, 1fr))" : "1fr",
-        gap: "2rem",
-    };
-
     return (
-        <div style={containerStyle} className="song-viewer">
+        <div
+            className={`song-viewer min-h-screen p-8 transition-colors duration-200 font-sans ${theme.name === "Dark Mode" ? "bg-gray-900 text-gray-50" : "bg-white text-gray-800"
+                }`}
+        >
             {/* Header */}
-            <div className="mb-8 border-b pb-4" style={{ borderColor: theme.colors.section_header }}>
+            <div
+                className={`mb-8 border-b pb-4 ${theme.name === "Dark Mode" ? "border-gray-600" : "border-gray-400"
+                    }`}
+            >
                 <div className="flex justify-between items-start">
                     <div className="flex-1">
                         <div className="flex items-center gap-3 group">
-                            <h1 style={titleStyle}>{song.metadata.title}</h1>
+                            <h1 className="text-3xl font-bold mb-1 leading-tight">
+                                {song.metadata.title}
+                            </h1>
                             {onEditMetadata && (
                                 <button
                                     onClick={onEditMetadata}
@@ -78,7 +58,10 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
                             )}
                         </div>
 
-                        <div style={metaStyle} className="space-y-1">
+                        <div
+                            className={`text-base space-y-1 mb-6 ${theme.name === "Dark Mode" ? "text-gray-400" : "text-gray-500"
+                                }`}
+                        >
                             <div className="text-lg font-medium">{song.metadata.artist}</div>
 
                             <div className="flex flex-wrap gap-x-4 gap-y-1 opacity-80">
@@ -139,7 +122,12 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
             </div>
 
             {/* Sections */}
-            <div style={bodyStyle}>
+            <div
+                className={`grid gap-8 ${theme.layout.two_column
+                        ? "grid-cols-[repeat(auto-fit,minmax(300px,1fr))]"
+                        : "grid-cols-1"
+                    }`}
+            >
                 {visibleSections.map((section) => (
                     <SectionRenderer key={section.uniqueKey} section={section} theme={theme} />
                 ))}

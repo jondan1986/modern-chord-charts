@@ -14,6 +14,7 @@ export default function SetlistDetailPage() {
     const theme = useAppStore((state) => state.theme);
     const loadSong = useAppStore((state) => state.loadSong);
 
+    const isDark = theme.name === "Dark Mode";
     const [setlist, setSetlist] = useState<StoredSetlist | null>(null);
     const [songsMap, setSongsMap] = useState<Record<string, StoredSong>>({});
     const [isPickerOpen, setIsPickerOpen] = useState(false);
@@ -121,10 +122,12 @@ export default function SetlistDetailPage() {
     if (!setlist) return <div className="p-8">Loading...</div>;
 
     return (
-        <div className="p-8 max-w-4xl mx-auto h-full overflow-y-auto" style={{ backgroundColor: theme.colors.background, color: theme.colors.text_primary }}>
+        <div
+            className={`p-8 max-w-4xl mx-auto h-full overflow-y-auto ${isDark ? "bg-gray-900 text-gray-50" : "bg-white text-gray-800"}`}
+        >
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">
-                <button onClick={() => router.push("/")} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
+                <button onClick={() => router.push("/")} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full" aria-label="Go back to home" title="Go back to home">
                     <ArrowLeft size={24} />
                 </button>
                 <div className="flex-1">
@@ -134,6 +137,9 @@ export default function SetlistDetailPage() {
                         onChange={e => setEditName(e.target.value)}
                         onBlur={handleSaveName}
                         className="text-3xl font-bold bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none w-full"
+                        aria-label="Setlist Name"
+                        placeholder="Setlist Name"
+                        title="Edit setlist name"
                     />
                     <div className="text-gray-500 text-sm mt-1">{setlist.songs.length} songs</div>
                 </div>
@@ -152,7 +158,10 @@ export default function SetlistDetailPage() {
                     if (!song) return <div key={index} className="text-red-500 p-4 border rounded">Song not found (ID: {songId})</div>;
 
                     return (
-                        <div key={`${songId}-${index}`} className="flex items-center gap-4 p-4 border rounded-lg bg-white dark:bg-gray-900 shadow-sm group" style={{ borderColor: theme.colors.section_header }}>
+                        <div
+                            key={`${songId}-${index}`}
+                            className={`flex items-center gap-4 p-4 border rounded-lg shadow-sm group ${isDark ? "bg-gray-900 border-gray-600" : "bg-white border-gray-400"}`}
+                        >
                             <div className="text-gray-400 font-mono w-6 text-center">{index + 1}</div>
                             <div className="flex-1">
                                 <div className="font-bold text-lg">{song.title}</div>
@@ -164,13 +173,13 @@ export default function SetlistDetailPage() {
                                     <Play size={18} />
                                 </button>
                                 <div className="w-px h-6 bg-gray-300 dark:bg-gray-700 mx-2"></div>
-                                <button onClick={() => handleMove(index, -1)} disabled={index === 0} className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30">
+                                <button onClick={() => handleMove(index, -1)} disabled={index === 0} className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30" aria-label="Move song up" title="Move song up">
                                     <ArrowUp size={18} />
                                 </button>
-                                <button onClick={() => handleMove(index, 1)} disabled={index === setlist.songs.length - 1} className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30">
+                                <button onClick={() => handleMove(index, 1)} disabled={index === setlist.songs.length - 1} className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30" aria-label="Move song down" title="Move song down">
                                     <ArrowDown size={18} />
                                 </button>
-                                <button onClick={() => handleRemoveSong(index)} className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded ml-2">
+                                <button onClick={() => handleRemoveSong(index)} className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded ml-2" aria-label="Remove song" title="Remove song">
                                     <Trash2 size={18} />
                                 </button>
                             </div>

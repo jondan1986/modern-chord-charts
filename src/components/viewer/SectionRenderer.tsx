@@ -12,22 +12,19 @@ interface Props {
 
 export const SectionRenderer: React.FC<Props> = ({ section, theme }) => {
     // Section Header Style
-    const headerStyle: React.CSSProperties = {
-        color: theme.colors.section_header,
-        fontWeight: "bold",
-        textTransform: "uppercase",
-        fontSize: "0.85em",
-        marginBottom: "0.25em",
-        marginTop: "1em",
-    };
-
     return (
         <div className="mb-6 break-inside-avoid">
             {/* Section Label */}
-            <div style={headerStyle}>
+            <div
+                className={`font-bold uppercase text-sm mb-1 mt-4 ${theme.name === "Dark Mode" ? "text-gray-600" : "text-gray-400"
+                    }`}
+            >
                 {section.label}
                 {section.bars && (
-                    <span className="ml-2 px-1.5 py-0.5 text-[0.7em] border rounded opacity-70" style={{ borderColor: theme.colors.section_header }}>
+                    <span
+                        className={`ml-2 px-1.5 py-0.5 text-[0.7em] border rounded opacity-70 ${theme.name === "Dark Mode" ? "border-gray-600" : "border-gray-400"
+                            }`}
+                    >
                         {section.bars} bars
                     </span>
                 )}

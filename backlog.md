@@ -8,8 +8,8 @@
 - [ ] Implement the theme editor and scope out all the different themeable properties. It would be nice to be able to follow Tailwind's theme system and allow for things like column count, font size, autofit for Letter or A4 printouts, etc. There should options for themeable section types (Verse, Chorus, Bridge, etc.) and section borders with dropshadows, etc. but still allow the user to edit the themeable properties in the theme editor.  The Viewer should be able to let the user select a theme from a list of themes. The Editor should be able to let the user select a theme from a list of themes.
 - [ ] ChordPro Import feature that reads the traditional ChordPro format and parses it and converts it to our new "MCS" format.
 - [ ] Modal Windows Text Input fields have VERY light colored text that is difficult to read we should make them easily readable in box light mode (Dark mode renders fine)
-- [ ] Key Signature Metadeta needs to render on the the editor Preview window and Viewer windows.
-- [ ] Implement a system that tracks the the count of bars in each section. This should be displayed in the viewer and allow the user to edit it. This should be validated using Zod.  This can later be used for track playback features.
+- [ ] Implement a system that tracks the the count of bars in each section. This should be displayed in the viewer and allow the user to edit it. This should be validated using Zod.  This can later be used for track playback features
+- [ ] Support the addition of "Custom" metadata attributes
 
 ## Complete
 
@@ -19,5 +19,7 @@
 - [x] The arrangements should be selectable in the Viewer.
 - [x] Build a setlist feature that allows the user to create and manage a setlist of songs. The setlist can be saved and loaded. The setlist can be shared with other users.
 - [x] Start a setlist session from the setlist detail page and navigate between songs using left/right arrows in the Viewer.
-- [x] Implement a system that tracks the the count of bars in each section. This should be displayed in the viewer and allow the user to edit it. This should be validated using Zod.  This can later be used for track playback features.
+- [x] Implement a system that tracks the the count of bars in each section. This should be displayed in the viewer and allow the user to edit it. This should be validated using Zod. This can later be used for track playback features.
 - [x] Ctrl+S in the editor should save the song to IndexedDB. Ctrl+O should open a file picker to load a song from IndexedDB. Ctrl+Shift+S should save the song "As New" to IndexedDB. Ctrl+Shift+O should open a file picker to load a song from IndexedDB. Ctrl+Z should undo the last change. Ctrl+Y should redo the last change.
+- [x] All the available metadata should be displayed in the viewer. The metadata should be editable in the viewer.
+- [x] Key Signature Metadeta needs to render on the the editor Preview window and Viewer windows.
