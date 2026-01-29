@@ -4,6 +4,7 @@ import { Theme } from "@/mcs-core/model";
 import React from "react";
 import { SectionRenderer } from "./SectionRenderer";
 import { DEFAULT_THEME } from "./themes";
+import { ChordList } from "./ChordList";
 
 interface Props {
     song: Song;
@@ -121,11 +122,14 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
                 </div>
             </div>
 
+            {/* Chord Diagrams */}
+            <ChordList song={song} theme={theme} />
+
             {/* Sections */}
             <div
                 className={`grid gap-8 ${theme.layout.two_column
-                        ? "grid-cols-[repeat(auto-fit,minmax(300px,1fr))]"
-                        : "grid-cols-1"
+                    ? "grid-cols-[repeat(auto-fit,minmax(300px,1fr))]"
+                    : "grid-cols-1"
                     }`}
             >
                 {visibleSections.map((section) => (
