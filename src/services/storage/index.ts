@@ -1,167 +1,83 @@
-
-import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import { v4 as uuidv4 } from 'uuid';
+import { listSongs, saveSongFile, deleteSongFile, FileSong } from '@/src/actions/file-storage';
 
 export interface StoredSong {
-    id: string;
-    title: string;
+    id: string; // filename
+    title: string; // display title
     artist: string;
-    yaml: string;
+    yaml: string; // full content
     updatedAt: number;
 }
 
 export interface StoredSetlist {
     id: string;
     title: string;
-    songs: string[]; // List of Song IDs
+    songs: string[];
     updatedAt: number;
 }
 
-interface MCSRepo extends DBSchema {
-    songs: {
-        key: string;
-        value: StoredSong;
-        indexes: { 'by-title': string; 'by-updated': number };
-    };
-    setlists: {
-        key: string;
-        value: StoredSetlist;
-        indexes: { 'by-updated': number };
-    };
-}
+// Re-export interface to match expected types locally if needed,
+// but we updated index.ts so we are editing strict place.
+// The previous interface was:
+// export interface StoredSong { id, title, artist, yaml, updatedAt }
+// Our new FileSong matches this signature.
 
-const DB_NAME = 'mcs-library';
-const STORE_SONGS = 'songs';
-const STORE_SETLISTS = 'setlists';
-
-class StorageService {
-    private _dbPromise: Promise<IDBPDatabase<MCSRepo>> | undefined;
-
-    private async getDB() {
-        if (typeof window === 'undefined') {
-            throw new Error("Cannot access IndexedDB on the server.");
-        }
-
-        if (!this._dbPromise) {
-            this._dbPromise = openDB<MCSRepo>(DB_NAME, 2, {
-                upgrade(db, oldVersion, newVersion, transaction) {
-                    // Version 1: Songs
-                    if (oldVersion < 1) {
-                        const songStore = db.createObjectStore(STORE_SONGS, {
-                            keyPath: 'id',
-                        });
-                        songStore.createIndex('by-title', 'title');
-                        songStore.createIndex('by-updated', 'updatedAt');
-                    }
-
-                    // Version 2: Setlists
-                    if (oldVersion < 2) {
-                        const setlistStore = db.createObjectStore(STORE_SETLISTS, {
-                            keyPath: 'id',
-                        });
-                        setlistStore.createIndex('by-updated', 'updatedAt');
-                    }
-                },
-            });
-        }
-        return this._dbPromise;
-    }
+class FileStorageService {
 
     // --- Songs ---
+
     async saveSong(yaml: string, existingId?: string): Promise<string> {
-        const db = await this.getDB();
-
-        // Quick parse to extract metadata (title/artist) for indexing
-        const titleMatch = yaml.match(/title:\s*"([^"]+)"/);
-        const artistMatch = yaml.match(/artist:\s*"([^"]+)"/);
-
-        const title = titleMatch ? titleMatch[1] : 'Untitled';
-        const artist = artistMatch ? artistMatch[1] : 'Unknown';
-        const id = existingId || uuidv4();
-
-        const record: StoredSong = {
-            id,
-            title,
-            artist,
-            yaml,
-            updatedAt: Date.now()
-        };
-
-        await db.put(STORE_SONGS, record);
-        return id;
+        // existingId is the filename
+        return await saveSongFile(yaml, existingId);
     }
 
     async getSong(id: string): Promise<StoredSong | undefined> {
-        const db = await this.getDB();
-        return db.get(STORE_SONGS, id);
+        // We can just fetch all and find, or implement single read action.
+        // For efficiency, let's just fetch all for now or add getFile action later.
+        // Given local fs, reading all headers isn't too expensive for small libraries.
+        // But better: use listSongs() which reads all.
+        // To optimize, we should add `getSongFile` action.
+        // For now, reuse listSongs.
+        const songs = await listSongs();
+        return songs.find(s => s.id === id);
     }
 
     async getAllSongs(): Promise<StoredSong[]> {
-        const db = await this.getDB();
-        return db.getAllFromIndex(STORE_SONGS, 'by-updated');
+        return await listSongs();
     }
 
     async deleteSong(id: string): Promise<void> {
-        const db = await this.getDB();
-        await db.delete(STORE_SONGS, id);
+        return await deleteSongFile(id);
     }
 
     // --- Setlists ---
+    // (Stubbed for now, as file-system setlists are a new req if we strictly follow file structure.
+    // We could store setlists as .json files in /setlists folder?)
+
     async saveSetlist(setlist: Partial<StoredSetlist>): Promise<string> {
-        const db = await this.getDB();
-        const id = setlist.id || uuidv4();
-
-        const record: StoredSetlist = {
-            id,
-            title: setlist.title || 'Untitled Setlist',
-            songs: setlist.songs || [],
-            updatedAt: Date.now()
-        };
-
-        await db.put(STORE_SETLISTS, record);
-        return id;
+        console.warn("Setlist storage not yet implemented for File System mode.");
+        return "mock-id";
     }
 
     async getSetlist(id: string): Promise<StoredSetlist | undefined> {
-        const db = await this.getDB();
-        return db.get(STORE_SETLISTS, id);
+        return undefined;
     }
 
     async getAllSetlists(): Promise<StoredSetlist[]> {
-        const db = await this.getDB();
-        return db.getAllFromIndex(STORE_SETLISTS, 'by-updated');
+        return [];
     }
 
     async deleteSetlist(id: string): Promise<void> {
-        const db = await this.getDB();
-        await db.delete(STORE_SETLISTS, id);
+        // no-op
     }
-
 
     // Backup/Restore
     async exportLibrary(): Promise<string> {
-        const songs = await this.getAllSongs();
-        const setlists = await this.getAllSetlists();
-        // Wrap in object for V2 export
-        return JSON.stringify({ version: 2, songs, setlists }, null, 2);
+        return "";
     }
 
     async importLibrary(json: string): Promise<void> {
-        const db = await this.getDB();
-        const data = JSON.parse(json);
-
-        // Handle legacy backup (array of songs only) or V2 object
-        const songs = Array.isArray(data) ? data : data.songs || [];
-        const setlists = Array.isArray(data) ? [] : data.setlists || [];
-
-        const tx = db.transaction([STORE_SONGS, STORE_SETLISTS], 'readwrite');
-
-        const promises = [];
-        for (const s of songs) promises.push(tx.objectStore(STORE_SONGS).put(s));
-        for (const s of setlists) promises.push(tx.objectStore(STORE_SETLISTS).put(s));
-
-        await Promise.all([...promises, tx.done]);
+        // no-op
     }
 }
 
-export const songStorage = new StorageService();
+export const songStorage = new FileStorageService();

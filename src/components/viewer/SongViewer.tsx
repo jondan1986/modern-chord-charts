@@ -124,13 +124,15 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
 
             {/* Sections */}
             <div
-                className={`grid gap-8 ${theme.layout.two_column
-                    ? "grid-cols-[repeat(auto-fit,minmax(300px,1fr))]"
-                    : "grid-cols-1"
+                className={`gap-6 ${theme.layout.two_column
+                    ? "columns-1 md:columns-2"
+                    : "columns-1"
                     }`}
             >
                 {visibleSections.map((section) => (
-                    <SectionRenderer key={section.uniqueKey} section={section} theme={theme} />
+                    <div key={section.uniqueKey} className="break-inside-avoid mb-6">
+                        <SectionRenderer section={section} theme={theme} />
+                    </div>
                 ))}
             </div>
 

@@ -7,6 +7,7 @@ interface InsertSectionModalProps {
     isOpen: boolean;
     onClose: () => void;
     onInsert: (sectionSnippet: string) => void;
+    initialLines?: string;
 }
 
 const SECTION_TYPES: { type: SectionType; label: string }[] = [
@@ -21,22 +22,54 @@ const SECTION_TYPES: { type: SectionType; label: string }[] = [
     { type: 'other', label: 'Custom' },
 ];
 
-export function InsertSectionModal({ isOpen, onClose, onInsert }: InsertSectionModalProps) {
+export function InsertSectionModal({ isOpen, onClose, onInsert, initialLines }: InsertSectionModalProps) {
     const [type, setType] = useState<SectionType>('verse');
-    const [customLabel, setCustomLabel] = useState('');
+    const [sectionLabel, setSectionLabel] = useState('Verse');
     const [lines, setLines] = useState('');
+
+    // When type changes, default the label to the type's name, unless type is 'other' (empty default?)
+    // Actually, user wants to specify label like "Verse 1".
+    // If I switch to Chorus, I probably want "Chorus" as a start.
+    React.useEffect(() => {
+        const typeLabel = SECTION_TYPES.find(t => t.type === type)?.label || 'Section';
+        setSectionLabel(typeLabel);
+    }, [type]);
+
+    React.useEffect(() => {
+        if (isOpen && initialLines) {
+            // Clean up the initial lines: remove YAML list markers, quotes, and indentation
+            const cleaned = initialLines
+                .split('\n')
+                .map(line => {
+                    let text = line.trim();
+                    // Remove leading dash and optional whitespace
+                    text = text.replace(/^-\s*/, '');
+                    // Remove surrounding double quotes if present
+                    if (text.startsWith('"') && text.endsWith('"')) {
+                        text = text.slice(1, -1);
+                    }
+                    // Remove surrounding single quotes if present
+                    else if (text.startsWith("'") && text.endsWith("'")) {
+                        text = text.slice(1, -1);
+                    }
+                    return text;
+                })
+                .filter(l => l.trim().length > 0) // Remove empty lines
+                .join('\n');
+
+            setLines(cleaned);
+        } else if (isOpen && !initialLines) {
+            setLines('');
+        }
+    }, [isOpen, initialLines]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         const id = uuidv4().slice(0, 8); // Short UUID for cleaner YAML
-        const label = type === 'other' ? (customLabel || 'Section') : type.charAt(0).toUpperCase() + type.slice(1);
+        const label = sectionLabel || (type.charAt(0).toUpperCase() + type.slice(1));
 
         // Construct YAML snippet
-        // We assume 2 spaces indentation for simplicity, or the parent will handle it.
-        // Actually best to return the block and let parent handle insertion point context?
-        // But for now let's produce a standard block valid for the 'sections' list.
-
         let snippet = `  - id: "${id}"\n`;
         snippet += `    type: "${type}"\n`;
         snippet += `    label: "${label}"\n`;
@@ -55,7 +88,7 @@ export function InsertSectionModal({ isOpen, onClose, onInsert }: InsertSectionM
         onClose();
         // Reset state
         setType('verse');
-        setCustomLabel('');
+        setSectionLabel('Verse');
         setLines('');
     };
 
@@ -80,21 +113,19 @@ export function InsertSectionModal({ isOpen, onClose, onInsert }: InsertSectionM
                     </select>
                 </div>
 
-                {type === 'other' && (
-                    <div>
-                        <label htmlFor="custom-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Custom Label
-                        </label>
-                        <input
-                            id="custom-label"
-                            type="text"
-                            value={customLabel}
-                            onChange={(e) => setCustomLabel(e.target.value)}
-                            placeholder="e.g., Solo, Interlude"
-                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm text-gray-900 dark:text-gray-100"
-                        />
-                    </div>
-                )}
+                <div>
+                    <label htmlFor="section-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Section Label
+                    </label>
+                    <input
+                        id="section-label"
+                        type="text"
+                        value={sectionLabel}
+                        onChange={(e) => setSectionLabel(e.target.value)}
+                        placeholder="e.g., Verse 1, Bridge 2"
+                        className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm text-gray-900 dark:text-gray-100"
+                    />
+                </div>
 
                 <div>
                     <label htmlFor="section-content" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

@@ -29,6 +29,8 @@ export default function EditorPage() {
     const [error, setError] = useState<string | null>(null);
     const theme = useAppStore((state) => state.theme);
     const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
+    const [selectedTextForModal, setSelectedTextForModal] = useState("");
+    const [selectedRangeForModal, setSelectedRangeForModal] = useState<any>(null);
     const [isMetadataModalOpen, setIsMetadataModalOpen] = useState(false);
     const [isArrangementsModalOpen, setIsArrangementsModalOpen] = useState(false);
 
@@ -41,33 +43,34 @@ export default function EditorPage() {
     // Keyboard Shortcuts
     useEffect(() => {
         const handleKeyDown = async (e: KeyboardEvent) => {
-            // Save: Ctrl+S
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
+            // Check for Ctrl+S or Cmd+S
+            if ((e.ctrlKey || e.metaKey) && e.code === 'KeyS') {
+                e.preventDefault(); // Stop browser save dialog
+                e.stopPropagation(); // Stop event bubbling
+
                 if (e.shiftKey) {
                     // Save As New (Ctrl+Shift+S)
-                    const newId = await import("@/src/services/storage").then(m => m.songStorage.saveSong(activeYaml));
-                    useAppStore.setState({ activeSongId: newId, lastSavedYaml: activeYaml });
-                    // Optional: Notify user
+                    const currentYaml = useAppStore.getState().activeYaml;
+                    const newId = await import("@/src/services/storage").then(m => m.songStorage.saveSong(currentYaml));
+                    useAppStore.setState({ activeSongId: newId, lastSavedYaml: currentYaml });
                     console.log("Saved as new song:", newId);
                 } else {
                     // Save Existing (Ctrl+S)
-                    await saveCurrentSong();
+                    await useAppStore.getState().saveCurrentSong();
                     console.log("Saved song");
                 }
             }
 
             // Open: Ctrl+O
-            if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+            if ((e.ctrlKey || e.metaKey) && e.code === 'KeyO') {
                 e.preventDefault();
-                // Navigate to library
                 router.push("/");
             }
         };
 
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [activeYaml, saveCurrentSong, router]);
+        window.addEventListener('keydown', handleKeyDown, { capture: true });
+        return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
+    }, [router]);
 
     const editorRef = React.useRef<any>(null); // Type 'any' for now to avoid specific Monaco types dependency
     const monacoRef = React.useRef<any>(null);
@@ -126,11 +129,11 @@ export default function EditorPage() {
         monaco.editor.setModelMarkers(model, "owner", markers);
     };
 
-    const insertSnippet = (snippet: string) => {
+    const insertSnippet = (snippet: string, range?: any) => {
         if (!editorRef.current) return;
 
         const editor = editorRef.current;
-        const selection = editor.getSelection();
+        const selection = range || editor.getSelection();
         const text = snippet;
         const op = { range: selection, text: text, forceMoveMarkers: true };
         editor.executeEdits("my-source", [op]);
@@ -138,7 +141,53 @@ export default function EditorPage() {
     };
 
     const handleSectionInsert = (snippet: string) => {
-        insertSnippet(snippet);
+        if (selectedRangeForModal && editorRef.current) {
+            const editor = editorRef.current;
+            const model = editor.getModel();
+            const lineCount = model.getLineCount();
+
+            // 1. Remove the selection (Cut)
+            const deleteOp = { range: selectedRangeForModal, text: "", forceMoveMarkers: true };
+
+            // 2. Append to end of file
+            // Check if last line is empty or not to determine if we need a newline
+            const lastLineContent = model.getLineContent(lineCount);
+            let appendText = snippet;
+            if (lastLineContent.trim() !== "") {
+                appendText = "\n" + snippet;
+            } else {
+                // If last line is just whitespace or empty
+                // We might want to ensure we are appending distinctly.
+                // safe bet is usually just \n
+                appendText = "\n" + snippet;
+            }
+
+            const endRange = {
+                startLineNumber: lineCount + 1,
+                startColumn: 1,
+                endLineNumber: lineCount + 1,
+                endColumn: 1
+            };
+
+            editor.executeEdits("my-source", [
+                deleteOp,
+                { range: endRange, text: appendText, forceMoveMarkers: true }
+            ]);
+
+            // Scroll to bottom to show new section
+            editor.revealLine(lineCount + 10); // +10 to be safe
+            editor.focus();
+        } else {
+            // No selection captured (e.g. just clicked button without selection)
+            // Just insert at cursor or append? 
+            // Default behavior was insert at cursor. User request implies "the highlighted section...".
+            // If no highlight, maybe regular insert is fine.
+            insertSnippet(snippet);
+        }
+
+        // Clear selection state after insert
+        setSelectedRangeForModal(null);
+        setSelectedTextForModal("");
     };
 
     const handleMetadataSave = (newMetadata: SongMetadata) => {
@@ -229,6 +278,21 @@ export default function EditorPage() {
 
 
 
+    const handleOpenSectionModal = () => {
+        if (editorRef.current) {
+            const selection = editorRef.current.getSelection();
+            if (selection && !selection.isEmpty()) {
+                const text = editorRef.current.getModel()?.getValueInRange(selection);
+                setSelectedTextForModal(text || "");
+                setSelectedRangeForModal(selection);
+            } else {
+                setSelectedTextForModal("");
+                setSelectedRangeForModal(null);
+            }
+        }
+        setIsSectionModalOpen(true);
+    };
+
     return (
         <div
             className="flex flex-col h-full overflow-hidden bg-white dark:bg-gray-900"
@@ -244,7 +308,7 @@ export default function EditorPage() {
                         className="flex items-center gap-2 p-2 border-b overflow-x-auto bg-white dark:bg-gray-900 border-gray-400 dark:border-gray-600"
                     >
                         <button
-                            onClick={() => setIsSectionModalOpen(true)}
+                            onClick={handleOpenSectionModal}
                             className="px-2 py-1 text-xs border rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition font-medium text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900"
                         >
                             + New Section
@@ -283,6 +347,27 @@ export default function EditorPage() {
                             onMount={(editor, monaco) => {
                                 editorRef.current = editor;
                                 monacoRef.current = monaco;
+
+                                editor.addAction({
+                                    id: 'create-section-from-selection',
+                                    label: 'Create New Section from Selection',
+                                    contextMenuGroupId: '1_modification',
+                                    contextMenuOrder: 1,
+                                    run: (ed: any) => {
+                                        const selection = ed.getSelection();
+                                        if (selection && !selection.isEmpty()) {
+                                            const text = ed.getModel()?.getValueInRange(selection);
+                                            setSelectedTextForModal(text || "");
+                                            setSelectedRangeForModal(selection);
+                                            setIsSectionModalOpen(true);
+                                        } else {
+                                            // If no selection, just open empty
+                                            setSelectedTextForModal("");
+                                            setSelectedRangeForModal(null);
+                                            setIsSectionModalOpen(true);
+                                        }
+                                    }
+                                });
                             }}
                             options={{
                                 minimap: { enabled: false },
@@ -318,6 +403,7 @@ export default function EditorPage() {
                 isOpen={isSectionModalOpen}
                 onClose={() => setIsSectionModalOpen(false)}
                 onInsert={handleSectionInsert}
+                initialLines={selectedTextForModal}
             />
 
             <EditMetadataModal
