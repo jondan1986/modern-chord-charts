@@ -33,8 +33,10 @@ export const ChordList: React.FC<Props> = ({ song, theme }) => {
 
     if (chords.length === 0) return null;
 
+    const containerStyle = { borderColor: theme.colors.section_header };
+
     return (
-        <div className="mb-8 p-4 rounded-xl border bg-gray-50/50 dark:bg-gray-800/30 backdrop-blur-sm" style={{ borderColor: theme.colors.section_header }}>
+        <div className="mb-8 p-4 rounded-xl border bg-gray-50/50 dark:bg-gray-800/30 backdrop-blur-sm" style={containerStyle}>
             <div className="flex justify-between items-center mb-4">
                 <div
                     className="flex items-center gap-2 cursor-pointer select-none"
@@ -47,22 +49,26 @@ export const ChordList: React.FC<Props> = ({ song, theme }) => {
                 </div>
 
                 <div className="flex gap-2">
-                    {(['guitar', 'ukulele'] as Instrument[]).map(inst => (
-                        <button
-                            key={inst}
-                            onClick={() => setInstrument(inst)}
-                            className={`px-2 py-1 text-xs rounded border transition capitalize ${instrument === inst
-                                ? 'bg-white dark:bg-gray-700 shadow-sm font-medium'
-                                : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 border-transparent'
-                                }`}
-                            style={{
-                                color: instrument === inst ? theme.colors.chord : undefined,
-                                borderColor: instrument === inst ? theme.colors.section_header : undefined
-                            }}
-                        >
-                            {inst}
-                        </button>
-                    ))}
+                    {(['guitar', 'ukulele'] as Instrument[]).map(inst => {
+                        const activeStyle = instrument === inst ? {
+                            color: theme.colors.chord,
+                            borderColor: theme.colors.section_header
+                        } : undefined;
+
+                        return (
+                            <button
+                                key={inst}
+                                onClick={() => setInstrument(inst)}
+                                className={`px-2 py-1 text-xs rounded border transition capitalize ${instrument === inst
+                                    ? 'bg-white dark:bg-gray-700 shadow-sm font-medium'
+                                    : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 border-transparent'
+                                    }`}
+                                style={activeStyle}
+                            >
+                                {inst}
+                            </button>
+                        );
+                    })}
                     {/* Piano placeholder */}
                     <button
                         className="px-2 py-1 text-xs rounded border border-transparent text-gray-300 dark:text-gray-700 cursor-not-allowed"

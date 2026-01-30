@@ -39,8 +39,7 @@ export const ChordDiagram: React.FC<Props> = ({ position, instrument, theme, cla
     return (
         <svg
             viewBox={`0 0 ${width} ${height}`}
-            className={`select-none ${className || ''}`}
-            style={{ width: '100%', height: 'auto', maxWidth: '120px' }}
+            className={`select-none w-full h-auto max-w-[120px] ${className || ''}`}
         >
             {/* Frets (Horizontal lines) */}
             {Array.from({ length: numFrets + 1 }).map((_, i) => (

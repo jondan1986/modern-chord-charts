@@ -68,10 +68,13 @@ export default function LibraryPage() {
     };
 
 
+    const pageStyle = { backgroundColor: theme.colors.background, color: theme.colors.text_primary };
+    const headerStyle = { borderColor: theme.colors.section_header };
+
     return (
-        <div className="p-8 max-w-5xl mx-auto h-full overflow-y-auto" style={{ backgroundColor: theme.colors.background, color: theme.colors.text_primary }}>
+        <div className="p-8 max-w-5xl mx-auto h-full overflow-y-auto" style={pageStyle}>
             {/* Header */}
-            <div className="flex justify-between items-center mb-6 border-b pb-4" style={{ borderColor: theme.colors.section_header }}>
+            <div className="flex justify-between items-center mb-6 border-b pb-4" style={headerStyle}>
                 <div className="flex items-center gap-4">
                     <h1 className="text-3xl font-bold">📚 Library</h1>
                     <div className="flex gap-1 ml-4">

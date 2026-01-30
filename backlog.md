@@ -1,32 +1,42 @@
-# Backlog
+# Project Backlog
 
-## Not Complete
+## 📋 Not Complete
 
-- [x] All the available metadata should be displayed in the viewer. The metadata should be editable in the viewer.
-- [x] Chord Diagrams (Viewer): Chord Diagrams should automatically be displayed in the viewer. The available instruments that can be displayed should be configurable. The 3 default instruments should be guitar, ukulele, and piano.
-- [x] Chord Diagrams (Editor): Chord Diagrams should be displayed in the editor. The chord diagrams should be editable in the editor.
-- [ ] Implement the theme editor and scope out all the different themeable properties. It would be nice to be able to follow Tailwind's theme system and allow for things like column count, font size, autofit for Letter or A4 printouts, etc. There should options for themeable section types (Verse, Chorus, Bridge, etc.) and section borders with dropshadows, etc. but still allow the user to edit the themeable properties in the theme editor. The Viewer should be able to let the user select a theme from a list of themes. The Editor should be able to let the user select a theme from a list of themes.
-- [x] ChordPro Import feature that reads the traditional ChordPro format and parses it and converts it to our new "MCS" format.
-- [ ] Modal Windows Text Input fields have VERY light colored text that is difficult to read we should make them easily readable in box light mode (Dark mode renders fine)
-- [x] Implement a system that tracks the count of bars in each section. This should be displayed in the viewer and allow the user to edit it. This should be validated using Zod. This can later be used for track playback features
-- [ ] Support the addition of "Custom" metadata attributes
-- [ ] New Section Feature: user can highlight lines in the editor and right click to create a new section. The new section editor (modal) should pop up asking for the type (Verse, Chorus, Bridge, Custom) and a field for new lines. the "Insert" button should nicely add the section to the song in a way that is semantically correct.
-- [ ] Implement a special section type that is music only (sometimes called chord grids) and makes it easy to see the chords according to the time signature. The viewer should display the chords in a way that is easy to read and understand. The editor should allow the user to edit the chords in a way that is easy to read and understand. there should be a way to graphically represent the bars and beats in the music only section. Maybe with cells, bars, or some other way to represent the chord changes and time signature.
-- [ ] Implement a feature that allows the user to export the song to a PDF file. The PDF should be formatted in a way that is easy to read and understand. The PDF should be formatted in a way that is easy to print.
-- [ ] Implement a feature that allows the user to export the song to a ChordPro file. The ChordPro should be formatted in a way that is easy to read and understand. The ChordPro should be formatted in a way that is easy to print.
-- [ ] There is a Chord Formatting issue that occurs when chords are spaced closely together. If the chords are right next to each other than add at least one space between them and adjust the lyrics to be properly aligned.
-- [ ] Ensure that the app looks and feels great on mobile devices. Right now scrolling in the viewer doesn't work on mobile devices.
-- [ ] If you insert a new section into the song and don't insert any lines, the system throws a Syntax Error: example: Syntax Error: Unexpected scalar at node end at line 13, column 19:
+- [ ] **Theme Editor**: Implement the theme editor and scope out all the different themeable properties.
+  - Follow Tailwind's theme system (column count, font size, autofit for Letter/A4).
+  - Options for themeable section types (Verse, Chorus, Bridge, etc.) and borders/shadows.
+  - Allow user to edit themeable properties in the theme editor.
+  - Viewer and Editor should allow theme selection from a list.
+- [ ] **Custom Metadata**: Support the addition of "Custom" metadata attributes.
+- [ ] **New Section Feature**: User can highlight lines in the editor and right-click to create a new section.
+  - Modal should ask for type (Verse, Chorus, Bridge, Custom) and content.
+  - "Insert" button should add the section semantically.
+- [ ] **Music Only Section (Chord Grids)**: Implement a special section type for chord grids.
+  - Display chords according to time signature.
+  - Editor should allow easy editing of these grids.
+  - Graphically represent bars/beats (cells, bars, etc.).
+- [ ] **PDF Export**: Implement export to formatted PDF (easy to read/print).
+- [ ] **ChordPro Export**: Implement export to formatted ChordPro (easy to read/print).
+- [ ] **Chord Formatting Issue**: specific fix for chords spaced closely together.
+  - If chords are adjacent, add at least one space and align lyrics.
+- [ ] **Mobile Optimization**: Ensure the app looks/feels great on mobile.
+  - Fix scrolling in the viewer on mobile.
+- [ ] **Bug Fix**: Syntax Error when inserting a new section without lines.
+  - `Syntax Error: Unexpected scalar at node end...`
 
-## Complete
+## ✅ Complete
 
-- [x] Roll up our + Verse +Chorus buttons into a unified "new section" button. The new section editor (modal) pops up asking for the type (Verse, Chorus, Bridge, Custom) and a field for new lines. the "Insert" button should nicely add the section to the song in a way that is semantically correct.
-- [x] Roll up our Metadata: Key, Time, Tempo into a new Edit Metadata button. This should pop up a modal with a form for editing the metadata. The form should be validated using Zod.
-- [x] Build an 'arrangement' feature into the viewer that allow the user to reuse and reorder sections in a song. The arrangements can be baked into the song for the Viewer to select and display them.
-- [x] The arrangements should be selectable in the Viewer.
-- [x] Build a setlist feature that allows the user to create and manage a setlist of songs. The setlist can be saved and loaded. The setlist can be shared with other users.
-- [x] Start a setlist session from the setlist detail page and navigate between songs using left/right arrows in the Viewer.
-- [x] Implement a system that tracks the the count of bars in each section. This should be displayed in the viewer and allow the user to edit it. This should be validated using Zod. This can later be used for track playback features.
-- [x] Ctrl+S in the editor should save the song to IndexedDB. Ctrl+O should open a file picker to load a song from IndexedDB. Ctrl+Shift+S should save the song "As New" to IndexedDB. Ctrl+Shift+O should open a file picker to load a song from IndexedDB. Ctrl+Z should undo the last change. Ctrl+Y should redo the last change.
-- [x] All the available metadata should be displayed in the viewer. The metadata should be editable in the viewer.
-- [x] Key Signature Metadeta needs to render on the the editor Preview window and Viewer windows.
+- [x] **Metadata Display**: All available metadata displayed and editable in the Viewer.
+- [x] **Chord Diagrams (Viewer)**: Automatically displayed. Configurable instruments (Guitar, Ukulele, Piano).
+- [x] **Chord Diagrams (Editor)**: Displayed and editable in the Editor.
+- [x] **ChordPro Import**: Convert traditional ChordPro format to "MCS" format.
+- [x] **UI Accessibility**: Fix modal text input contrast in light mode.
+- [x] **Bar Counts**: Track and edit bar counts in sections (validated via Zod).
+- [x] **Unified Section Button**: "New Section" button combining Verse/Chorus/etc. with modal.
+- [x] **Unified Metadata Button**: "Edit Metadata" button replacing individual keys/time/tempo buttons.
+- [x] **Arrangements**: Feature to reuse and reorder sections, baked into the song for Viewer selection.
+- [x] **Viewer Arrangements**: Selectable arrangements in the Viewer.
+- [x] **Setlists**: Create, manage, save, load, and share setlists.
+- [x] **Setlist Session**: Navigation between songs using left/right arrows in Viewer.
+- [x] **Shortcuts**: Ctrl+S (Save), Ctrl+O (Open), Ctrl+Shift+S (Save As New), Ctrl+Shift+O (Open New), Ctrl+Z (Undo), Ctrl+Y (Redo).
+- [x] **Key Signature**: Renders on Editor Preview and Viewer windows.
