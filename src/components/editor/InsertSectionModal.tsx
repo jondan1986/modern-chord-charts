@@ -63,13 +63,14 @@ export function InsertSectionModal({ isOpen, onClose, onInsert }: InsertSectionM
         <Modal isOpen={isOpen} onClose={onClose} title="Add New Section">
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label htmlFor="section-type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Section Type
                     </label>
                     <select
+                        id="section-type"
                         value={type}
                         onChange={(e) => setType(e.target.value as SectionType)}
-                        className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+                        className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm text-gray-900 dark:text-gray-100"
                     >
                         {SECTION_TYPES.map((t) => (
                             <option key={t.type} value={t.type}>
@@ -81,29 +82,31 @@ export function InsertSectionModal({ isOpen, onClose, onInsert }: InsertSectionM
 
                 {type === 'other' && (
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label htmlFor="custom-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Custom Label
                         </label>
                         <input
+                            id="custom-label"
                             type="text"
                             value={customLabel}
                             onChange={(e) => setCustomLabel(e.target.value)}
                             placeholder="e.g., Solo, Interlude"
-                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm text-gray-900 dark:text-gray-100"
                         />
                     </div>
                 )}
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label htmlFor="section-content" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Content (Lines)
                     </label>
                     <textarea
+                        id="section-content"
                         value={lines}
                         onChange={(e) => setLines(e.target.value)}
                         rows={4}
                         placeholder="Type lyrics or chords here...&#10;One line per row."
-                        className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm font-mono"
+                        className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm font-mono text-gray-900 dark:text-gray-100"
                     />
                 </div>
 

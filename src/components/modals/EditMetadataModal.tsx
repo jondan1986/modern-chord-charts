@@ -89,57 +89,62 @@ export function EditMetadataModal({ isOpen, onClose, initialMetadata, onSave }: 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
+                        <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
                         <input
+                            id="title"
                             type="text"
                             value={formData.title}
                             onChange={(e) => handleChange('title', e.target.value)}
-                            className={`w-full rounded-md border ${errors.title ? 'border-red-500' : 'border-gray-300'} dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                            className={`w-full rounded-md border ${errors.title ? 'border-red-500' : 'border-gray-300'} dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 dark:text-gray-100`}
                         />
                         {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
                     </div>
 
                     <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Artist</label>
+                        <label htmlFor="artist" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Artist</label>
                         <input
+                            id="artist"
                             type="text"
                             value={formData.artist}
                             onChange={(e) => handleChange('artist', e.target.value)}
-                            className={`w-full rounded-md border ${errors.artist ? 'border-red-500' : 'border-gray-300'} dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                            className={`w-full rounded-md border ${errors.artist ? 'border-red-500' : 'border-gray-300'} dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 dark:text-gray-100`}
                         />
                         {errors.artist && <p className="text-red-500 text-xs mt-1">{errors.artist}</p>}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Key</label>
+                        <label htmlFor="key" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Key</label>
                         <input
+                            id="key"
                             type="text"
                             value={formData.key || ''}
                             onChange={(e) => handleChange('key', e.target.value)}
                             placeholder="e.g. C"
-                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 dark:text-gray-100"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time Sig</label>
+                        <label htmlFor="time_signature" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time Sig</label>
                         <input
+                            id="time_signature"
                             type="text"
                             value={formData.time_signature || ''}
                             onChange={(e) => handleChange('time_signature', e.target.value)}
                             placeholder="e.g. 4/4"
-                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 dark:text-gray-100"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tempo (BPM)</label>
+                        <label htmlFor="tempo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tempo (BPM)</label>
                         <input
+                            id="tempo"
                             type="number"
                             value={formData.tempo || ''}
                             onChange={(e) => handleChange('tempo', parseInt(e.target.value) || undefined)}
                             placeholder="e.g. 120"
-                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 dark:text-gray-100"
                         />
                         {errors.tempo && <p className="text-red-500 text-xs mt-1">{errors.tempo}</p>}
                     </div>

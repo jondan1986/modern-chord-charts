@@ -131,6 +131,7 @@ export function ManageArrangementsModal({ isOpen, onClose, sections, existingArr
                                     <button
                                         onClick={() => handleDelete(idx)}
                                         className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                                        title="Delete Arrangement"
                                     >
                                         <Trash2 size={16} />
                                     </button>
@@ -159,12 +160,13 @@ export function ManageArrangementsModal({ isOpen, onClose, sections, existingArr
                 // Edit View
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+                        <label htmlFor="arrangement-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
                         <input
+                            id="arrangement-name"
                             type="text"
                             value={editName}
                             onChange={(e) => setEditName(e.target.value)}
-                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 dark:text-gray-100"
                         />
                     </div>
 
@@ -180,6 +182,7 @@ export function ManageArrangementsModal({ isOpen, onClose, sections, existingArr
                                         key={s.id}
                                         onClick={() => addToOrder(s.id)}
                                         className="w-full text-left px-2 py-1 text-sm rounded hover:bg-gray-100 dark:hover:bg-gray-700 truncate"
+                                        title={`Add ${s.label}`}
                                     >
                                         <Plus size={12} className="inline mr-1 opacity-50" /> {s.label} <span className='text-xs text-gray-400'>({s.id})</span>
                                     </button>
@@ -199,13 +202,27 @@ export function ManageArrangementsModal({ isOpen, onClose, sections, existingArr
                                         <div className="flex-1 px-2 py-1 text-sm bg-gray-50 dark:bg-gray-800 border dark:border-gray-700 rounded truncate">
                                             {getSectionLabel(sid)}
                                         </div>
-                                        <button onClick={() => moveUp(idx)} disabled={idx === 0} className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30">
+                                        <button
+                                            onClick={() => moveUp(idx)}
+                                            disabled={idx === 0}
+                                            className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                                            title="Move Up"
+                                        >
                                             <ArrowUp size={12} />
                                         </button>
-                                        <button onClick={() => moveDown(idx)} disabled={idx === editOrder.length - 1} className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30">
+                                        <button
+                                            onClick={() => moveDown(idx)}
+                                            disabled={idx === editOrder.length - 1}
+                                            className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                                            title="Move Down"
+                                        >
                                             <ArrowDown size={12} />
                                         </button>
-                                        <button onClick={() => removeFromOrder(idx)} className="p-1 text-red-400 hover:text-red-600">
+                                        <button
+                                            onClick={() => removeFromOrder(idx)}
+                                            className="p-1 text-red-400 hover:text-red-600"
+                                            title="Remove"
+                                        >
                                             <X size={12} />
                                         </button>
                                     </div>

@@ -29,10 +29,11 @@ export function SongPickerModal({ isOpen, onClose, onSelect }: Props) {
             <div className="mb-4">
                 <input
                     type="text"
+                    aria-label="Search Songs"
                     placeholder="Search songs..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-md dark:bg-gray-800 dark:border-gray-700"
+                    className="w-full px-3 py-2 border rounded-md dark:bg-gray-800 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500"
                 />
             </div>
 

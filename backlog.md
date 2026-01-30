@@ -11,10 +11,12 @@
 - [x] Implement a system that tracks the count of bars in each section. This should be displayed in the viewer and allow the user to edit it. This should be validated using Zod. This can later be used for track playback features
 - [ ] Support the addition of "Custom" metadata attributes
 - [ ] New Section Feature: user can highlight lines in the editor and right click to create a new section. The new section editor (modal) should pop up asking for the type (Verse, Chorus, Bridge, Custom) and a field for new lines. the "Insert" button should nicely add the section to the song in a way that is semantically correct.
-- [ ] Implement a special section type that is music only and makes it easy to see the chords according to the time signature. The viewer should display the chords in a way that is easy to read and understand. The editor should allow the user to edit the chords in a way that is easy to read and understand. there should be a way to graphically represent the bars and beats in the music only section.
+- [ ] Implement a special section type that is music only (sometimes called chord grids) and makes it easy to see the chords according to the time signature. The viewer should display the chords in a way that is easy to read and understand. The editor should allow the user to edit the chords in a way that is easy to read and understand. there should be a way to graphically represent the bars and beats in the music only section. Maybe with cells, bars, or some other way to represent the chord changes and time signature.
 - [ ] Implement a feature that allows the user to export the song to a PDF file. The PDF should be formatted in a way that is easy to read and understand. The PDF should be formatted in a way that is easy to print.
 - [ ] Implement a feature that allows the user to export the song to a ChordPro file. The ChordPro should be formatted in a way that is easy to read and understand. The ChordPro should be formatted in a way that is easy to print.
 - [ ] There is a Chord Formatting issue that occurs when chords are spaced closely together. If the chords are right next to each other than add at least one space between them and adjust the lyrics to be properly aligned.
+- [ ] Ensure that the app looks and feels great on mobile devices. Right now scrolling in the viewer doesn't work on mobile devices.
+- [ ] If you insert a new section into the song and don't insert any lines, the system throws a Syntax Error: example: Syntax Error: Unexpected scalar at node end at line 13, column 19:
 
 ## Complete
 
