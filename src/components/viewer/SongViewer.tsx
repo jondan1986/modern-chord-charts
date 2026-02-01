@@ -12,25 +12,70 @@ interface Props {
     onEditMetadata?: () => void;
 }
 
+import { transposeChord, getTargetKey, getKeyPreference } from "@/src/mcs-core/transpose";
+
 export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEditMetadata }) => {
     const [activeArrangementIdx, setActiveArrangementIdx] = React.useState<number | null>(null);
+    const [transposeSteps, setTransposeSteps] = React.useState(0);
 
-    // Reset arrangement selection if song changes
+    // Reset arrangement and transpose if song changes ID (but what if just content changes?)
     React.useEffect(() => {
         setActiveArrangementIdx(null);
-    }, [song]);
+        setTransposeSteps(0);
+    }, [song.metadata.title, song.metadata.artist]);
+
+    // Transpose Logic
+    const displayedSong = React.useMemo(() => {
+        if (transposeSteps === 0) return song;
+
+        const originalKey = song.metadata.key || "C";
+        const newKey = getTargetKey(originalKey, transposeSteps);
+        const pref = getKeyPreference(newKey);
+
+        const newSong = { ...song };
+        newSong.metadata = { ...song.metadata, key: newKey };
+
+        newSong.sections = song.sections.map(section => {
+            const newSection = { ...section };
+            newSection.lines = section.lines.map(line => {
+                if (typeof line === 'string') {
+                    // Handle Grid Strings or raw text
+                    if (section.type === 'grid') {
+                        // Regex matches Chords (simple check)
+                        return line.replace(/\b([A-G](?:#|b)?(?:[a-zA-Z0-9]*)?(?:\/[A-G](?:#|b)?)?)\b/g, (match) => {
+                            // verify it looks like a chord? Basic check:
+                            if (!match.match(/^[A-G]/)) return match;
+                            return transposeChord(match, transposeSteps, pref);
+                        });
+                    }
+                    return line;
+                } else {
+                    // Handle Strict Line
+                    const newLine = { ...line };
+                    newLine.content = line.content.map(seg => {
+                        if (!seg.chord) return seg;
+                        return { ...seg, chord: transposeChord(seg.chord, transposeSteps, pref) };
+                    });
+                    return newLine;
+                }
+            });
+            return newSection;
+        });
+
+        return newSong;
+    }, [song, transposeSteps]);
 
     // Determine sections to display
     const visibleSections = React.useMemo(() => {
-        if (activeArrangementIdx !== null && song.arrangements && song.arrangements[activeArrangementIdx]) {
-            const arrangement = song.arrangements[activeArrangementIdx];
+        if (activeArrangementIdx !== null && displayedSong.arrangements && displayedSong.arrangements[activeArrangementIdx]) {
+            const arrangement = displayedSong.arrangements[activeArrangementIdx];
             return arrangement.order.map((sectionId, index) => {
-                const section = song.sections.find(s => s.id === sectionId);
+                const section = displayedSong.sections.find(s => s.id === sectionId);
                 return section ? { ...section, uniqueKey: `${section.id}-${index}` } : null;
-            }).filter(Boolean) as (typeof song.sections[0] & { uniqueKey: string })[];
+            }).filter(Boolean) as (typeof displayedSong.sections[0] & { uniqueKey: string })[];
         }
-        return song.sections.map(s => ({ ...s, uniqueKey: s.id }));
-    }, [song, activeArrangementIdx]);
+        return displayedSong.sections.map(s => ({ ...s, uniqueKey: s.id }));
+    }, [displayedSong, activeArrangementIdx]);
 
     return (
         <div
@@ -46,7 +91,7 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
                     <div className="flex-1">
                         <div className="flex items-center gap-3 group">
                             <h1 className="text-3xl font-bold mb-1 leading-tight">
-                                {song.metadata.title}
+                                {displayedSong.metadata.title}
                             </h1>
                             {onEditMetadata && (
                                 <button
@@ -60,38 +105,48 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
                         </div>
 
                         <div
-                            className={`text-base space-y-1 mb-6 ${theme.name === "Dark Mode" ? "text-gray-400" : "text-gray-500"
+                            className={`text-base space-y-1 mb-6 flex items-center justify-between ${theme.name === "Dark Mode" ? "text-gray-400" : "text-gray-500"
                                 }`}
                         >
-                            <div className="text-lg font-medium">{song.metadata.artist}</div>
+                            <div className="flex flex-col">
+                                <div className="text-lg font-medium">{displayedSong.metadata.artist}</div>
 
-                            <div className="flex flex-wrap gap-x-4 gap-y-1 opacity-80">
-                                {song.metadata.key && <span><span className="opacity-60">Key:</span> {song.metadata.key}</span>}
-                                {song.metadata.tempo && <span><span className="opacity-60">Tempo:</span> {song.metadata.tempo} bpm</span>}
-                                {song.metadata.time_signature && <span><span className="opacity-60">Time:</span> {song.metadata.time_signature}</span>}
-                            </div>
-
-                            {(song.metadata.ccli || song.metadata.copyright) && (
-                                <div className="text-xs opacity-60 mt-1">
-                                    {song.metadata.ccli && <span className="mr-3">CCLI: {song.metadata.ccli}</span>}
-                                    {song.metadata.copyright && <span>© {song.metadata.copyright}</span>}
-                                </div>
-                            )}
-
-                            {song.metadata.themes && song.metadata.themes.length > 0 && (
-                                <div className="flex gap-2 mt-1">
-                                    {song.metadata.themes.map(t => (
-                                        <span key={t} className="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-xs border dark:border-gray-700">
-                                            {t}
+                                <div className="flex flex-wrap gap-x-4 gap-y-1 opacity-80 items-center mt-1">
+                                    <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">
+                                        <button
+                                            onClick={() => setTransposeSteps(s => s - 1)}
+                                            className="hover:text-blue-500 px-1 font-bold"
+                                        >-</button>
+                                        <span className="font-semibold text-gray-900 dark:text-gray-100">
+                                            Key: {displayedSong.metadata.key || "?"}
                                         </span>
-                                    ))}
+                                        <button
+                                            onClick={() => setTransposeSteps(s => s + 1)}
+                                            className="hover:text-blue-500 px-1 font-bold"
+                                        >+</button>
+                                    </div>
+
+                                    {displayedSong.metadata.tempo && <span><span className="opacity-60">Tempo:</span> {displayedSong.metadata.tempo} bpm</span>}
+                                    {displayedSong.metadata.time_signature && <span><span className="opacity-60">Time:</span> {displayedSong.metadata.time_signature}</span>}
                                 </div>
-                            )}
+                            </div>
                         </div>
+
+                        {(displayedSong.metadata.ccli || displayedSong.metadata.copyright || (displayedSong.metadata.themes && displayedSong.metadata.themes.length > 0)) && (
+                            <div className={`text-xs opacity-60 mt-1 ${theme.name === "Dark Mode" ? "text-gray-400" : "text-gray-500"}`}>
+                                {displayedSong.metadata.ccli && <span className="mr-3">CCLI: {displayedSong.metadata.ccli}</span>}
+                                {displayedSong.metadata.copyright && <span className="mr-3">© {displayedSong.metadata.copyright}</span>}
+                                {displayedSong.metadata.themes && displayedSong.metadata.themes.map(t => (
+                                    <span key={t} className="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 border dark:border-gray-700 mr-1">
+                                        {t}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Arrangement Selector */}
-                    {song.arrangements && song.arrangements.length > 0 && (
+                    {displayedSong.arrangements && displayedSong.arrangements.length > 0 && (
                         <div className="flex flex-col items-end gap-2">
                             <span className="text-xs font-semibold opacity-70">ARRANGEMENT</span>
                             <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
@@ -104,7 +159,7 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
                                 >
                                     Default
                                 </button>
-                                {song.arrangements.map((arr, idx) => (
+                                {displayedSong.arrangements.map((arr, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => setActiveArrangementIdx(idx)}
@@ -136,9 +191,9 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
                 ))}
             </div>
 
-            {/* Chord Diagrams */}
+            {/* Chord Diagrams - use original or transposed? Transposed ideally. */}
             <div className="mt-12 break-inside-avoid">
-                <ChordList song={song} theme={theme} />
+                <ChordList song={displayedSong} theme={theme} />
             </div>
         </div>
     );

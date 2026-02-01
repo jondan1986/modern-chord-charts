@@ -336,7 +336,7 @@ export default function EditorPage() {
                     )}
 
                     <div
-                        className="flex-1 w-full h-full relative bg-white dark:bg-[#1e1e1e]"
+                        className="flex-1 w-full relative bg-white dark:bg-[#1e1e1e]"
                     >
                         <Editor
                             height="100%"
@@ -373,7 +373,7 @@ export default function EditorPage() {
                                 minimap: { enabled: false },
                                 fontSize: 13,
                                 lineNumbers: 'on',
-                                scrollBeyondLastLine: false,
+                                scrollBeyondLastLine: true,
                                 automaticLayout: true,
                                 tabSize: 2,
                                 renderWhitespace: 'selection',
@@ -387,7 +387,7 @@ export default function EditorPage() {
                     className="w-1/2 overflow-y-auto relative bg-white dark:bg-gray-900"
                 >
                     {parsedSong ? (
-                        <div className="transform scale-90 origin-top-left p-4">
+                        <div className="p-8 pb-40">
                             <SongViewer song={parsedSong} theme={theme} />
                         </div>
                     ) : (

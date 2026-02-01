@@ -19,6 +19,7 @@ const SECTION_TYPES: { type: SectionType; label: string }[] = [
     { type: 'instrumental', label: 'Instrumental' },
     { type: 'tag', label: 'Tag' },
     { type: 'hook', label: 'Hook' },
+    { type: 'grid', label: 'Grid' },
     { type: 'other', label: 'Custom' },
 ];
 
@@ -136,7 +137,9 @@ export function InsertSectionModal({ isOpen, onClose, onInsert, initialLines }: 
                         value={lines}
                         onChange={(e) => setLines(e.target.value)}
                         rows={4}
-                        placeholder="Type lyrics or chords here...&#10;One line per row."
+                        placeholder={type === 'grid'
+                            ? "Enter chords separated by pipes |\n| C | G | Am | F |\n| C | G | C | |"
+                            : "Type lyrics or chords here...&#10;One line per row."}
                         className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm font-mono text-gray-900 dark:text-gray-100"
                     />
                 </div>

@@ -36,7 +36,7 @@ export const LineSchema = z.object({
 
 export const SectionSchema = z.object({
     id: z.string(),
-    type: z.enum(["verse", "chorus", "bridge", "tag", "intro", "outro", "hook", "instrumental", "other"]).default("other"),
+    type: z.enum(["verse", "chorus", "bridge", "tag", "intro", "outro", "hook", "instrumental", "grid", "other"]).default("other"),
     label: z.string().optional(),
     bars: z.number().int().positive().optional(),
     lines: z.array(z.union([z.string(), LineSchema])), // Supports both Compact (string) and Strict (object)

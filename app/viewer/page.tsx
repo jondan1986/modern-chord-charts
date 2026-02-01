@@ -150,7 +150,7 @@ export default function Home() {
 
       {/* Single Viewer */}
       <div
-        className={`border rounded-xl shadow-sm overflow-hidden min-h-[500px] ${theme.name === "Dark Mode" ? "border-gray-600" : "border-gray-400"
+        className={`border rounded-xl shadow-sm min-h-[500px] ${theme.name === "Dark Mode" ? "border-gray-600" : "border-gray-400"
           }`}
       >
         <SongViewer

@@ -4,6 +4,7 @@ import { Theme } from "@/mcs-core/model";
 import React from "react";
 import { LineRenderer } from "./LineRenderer";
 import { Line } from "@/mcs-core/model";
+import { GridRenderer } from "./GridRenderer";
 
 interface Props {
     section: Section;
@@ -11,6 +12,10 @@ interface Props {
 }
 
 export const SectionRenderer: React.FC<Props> = ({ section, theme }) => {
+    if (section.type === 'grid') {
+        return <GridRenderer section={section} theme={theme} />;
+    }
+
     // Section Header Style
     return (
         <div className="mb-6 break-inside-avoid">

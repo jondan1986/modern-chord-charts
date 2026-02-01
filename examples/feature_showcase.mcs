@@ -1,0 +1,63 @@
+schema_version: "1.0.0"
+metadata:
+  title: "Example Song (MCS Features)"
+  artist: "New Artist"
+  key: "C"
+  tempo: 120
+  time_signature: "4/4"
+  ccli: "123456"
+  copyright: "2024 Demo Music"
+  themes:
+    - "Demo"
+    - "Documentation"
+
+definitions:
+  - name: "Cmaj7"
+    frets: [-1, 3, 2, 0, 0, 0]
+    fingers: [0, 3, 2, 0, 0, 0]
+
+sections:
+  - id: "intro"
+    type: "grid"
+    label: "Intro"
+    lines:
+      - "| C | Am | F | G |"
+      - "| C | Am | F | G |"
+
+  - id: "v1"
+    type: "verse"
+    label: "Verse 1"
+    lines:
+      - "This is a [C]standard verse with [Am]lines"
+      - "You can [F]place chords [G]inline"
+      - "And they [C]will render [Am]above the text"
+
+  - id: "c1"
+    type: "chorus"
+    label: "Chorus"
+    lines:
+      - "This is the [F]Chorus, sing it [C]loud"
+      - "Make the [G]developer [Am]proud"
+      - "This is the [F]Chorus, sing it [C]high"
+      - "Until we [G]code until we [C]die"
+
+  - id: "inst"
+    type: "grid"
+    label: "Instrumental"
+    bars: 8
+    lines:
+      - "| Am | F | C | G |"
+      - "| Am | F | C | G |"
+
+arrangements:
+  - name: "Standard"
+    order:
+      - "intro"
+      - "v1"
+      - "c1"
+      - "inst"
+      - "c1"
+  - name: "Acoustic"
+    order:
+      - "v1"
+      - "c1"

@@ -40,7 +40,7 @@ export interface ChordDefinition {
   fingers?: number[]; // 1=Index, 4=Pinky, 0=Open
 }
 
-export type SectionType = "verse" | "chorus" | "bridge" | "tag" | "intro" | "outro" | "hook" | "instrumental" | "other";
+export type SectionType = "verse" | "chorus" | "bridge" | "tag" | "intro" | "outro" | "hook" | "instrumental" | "grid" | "other";
 
 export interface Section {
   id: string;

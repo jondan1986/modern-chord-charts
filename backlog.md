@@ -9,10 +9,6 @@
   - Viewer and Editor should allow theme selection from a list.
 - [ ] **Custom Metadata**: Support the addition of "Custom" metadata attributes.
 
-- [ ] **Music Only Section (Chord Grids)**: Implement a special section type for chord grids.
-  - Display chords according to time signature.
-  - Editor should allow easy editing of these grids.
-  - Graphically represent bars/beats (cells, bars, etc.).
 - [ ] **PDF Export / Print Function**: Implement export to formatted PDF (easy to read/print).
 - [ ] **ChordPro Export**:
 - [ ] **Chord Formatting Issue**: specific fix for chords spaced closely together.
@@ -26,6 +22,7 @@
 - [ ] **Library UX Fixes**: All Library action buttons should appear on the action bar, and not as single icons next to the Library card title.
 - [ ] **Section Comments**: Have a Section "subtitle" that includes a short phrase or note about the section. i.e. Breakdown or All-In or Accapella or Out on Beat 3, etc.
 - [ ] **Better ChordPro Imports/Exports**: Right now chordpro imports just import the song as One Big Verse Section and don't import sections correctly. They also don't import meta correctly. Implement export to formatted ChordPro (easy to read/print).
+- [ ] **Transpose Feature**: need to modify the metadata to include "original_key". SongViewer should have a easy-to-use but not overbearing UI/UX to modify and update the Rendered key on the fly based on selectors on the page. The original_key chords in the editor should not change.
 
 ## ✅ Complete
 
@@ -46,3 +43,8 @@
 
 - [x] **Shortcuts**: Ctrl+S (Save), Ctrl+O (Open), Ctrl+Shift+S (Save As New), Ctrl+Shift+O (Open New), Ctrl+Z (Undo), Ctrl+Y (Redo).
 - [x] **Key Signature**: Renders on Editor Preview and Viewer windows.
+- [x] **Music Only Section (Chord Grids)**: Implemented special `grid` section type for chord grids.
+  - Display chords according to time signature (bars).
+  - Editor allows editing via "New Section" modal.
+  - Graphically represents bars/beats using `GridRenderer`.
+- [x] **UX Issue: Code Editor Scrolling**: Fixed issue where editor would not scroll to the end of the file. Enabled `scrollBeyondLastLine` and fixed flex layout.
