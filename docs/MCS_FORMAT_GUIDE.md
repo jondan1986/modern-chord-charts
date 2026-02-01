@@ -61,7 +61,8 @@
 
 - `id`: Include a short, unique ID (e.g., "v1", "c1"). This is used for arrangements.
 - `type`: Semantic type. Options: `verse`, `chorus`, `bridge`, `intro`, `outro`, `instrumental`, `tag`, `hook`, `grid`, `other`.
-- `label`: (Optional) Custom display name like "Verse 1" or "Breakdown".
+- `label`: (Optional) Custom display name like "Verse 1".
+- `subtitle`: (Optional) Short note like "Build", "All In".
 - `lines`: The content of the section.
 
 ### Writing Lyrics & Chords

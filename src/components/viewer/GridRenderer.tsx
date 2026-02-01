@@ -24,6 +24,13 @@ export const GridRenderer: React.FC<Props> = ({ section, theme }) => {
                         {section.bars} bars
                     </span>
                 )}
+                {section.subtitle && (
+                    <span
+                        className={`ml-3 text-xs italic opacity-80 normal-case ${theme.name === "Dark Mode" ? "text-gray-500" : "text-gray-500"}`}
+                    >
+                        {section.subtitle}
+                    </span>
+                )}
             </div>
 
             {/* Grid Content */}

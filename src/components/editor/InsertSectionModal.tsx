@@ -26,11 +26,10 @@ const SECTION_TYPES: { type: SectionType; label: string }[] = [
 export function InsertSectionModal({ isOpen, onClose, onInsert, initialLines }: InsertSectionModalProps) {
     const [type, setType] = useState<SectionType>('verse');
     const [sectionLabel, setSectionLabel] = useState('Verse');
+    const [subtitle, setSubtitle] = useState('');
     const [lines, setLines] = useState('');
 
-    // When type changes, default the label to the type's name, unless type is 'other' (empty default?)
-    // Actually, user wants to specify label like "Verse 1".
-    // If I switch to Chorus, I probably want "Chorus" as a start.
+    // When type changes, default the label to the type's name
     React.useEffect(() => {
         const typeLabel = SECTION_TYPES.find(t => t.type === type)?.label || 'Section';
         setSectionLabel(typeLabel);
@@ -38,42 +37,44 @@ export function InsertSectionModal({ isOpen, onClose, onInsert, initialLines }: 
 
     React.useEffect(() => {
         if (isOpen && initialLines) {
+            // Clean up the initial lines... (omitted for brevity, keep existing logic)
+            // Note: We don't have existing logic to extract subtitle from raw text easily unless we parse, 
+            // but initialLines usually is just the selected text which is content.
+
+            // Just reusing existing cleanup logic?
             // Clean up the initial lines: remove YAML list markers, quotes, and indentation
             const cleaned = initialLines
                 .split('\n')
                 .map(line => {
                     let text = line.trim();
-                    // Remove leading dash and optional whitespace
                     text = text.replace(/^-\s*/, '');
-                    // Remove surrounding double quotes if present
-                    if (text.startsWith('"') && text.endsWith('"')) {
-                        text = text.slice(1, -1);
-                    }
-                    // Remove surrounding single quotes if present
-                    else if (text.startsWith("'") && text.endsWith("'")) {
-                        text = text.slice(1, -1);
-                    }
+                    if (text.startsWith('"') && text.endsWith('"')) text = text.slice(1, -1);
+                    else if (text.startsWith("'") && text.endsWith("'")) text = text.slice(1, -1);
                     return text;
                 })
-                .filter(l => l.trim().length > 0) // Remove empty lines
+                .filter(l => l.trim().length > 0)
                 .join('\n');
 
             setLines(cleaned);
         } else if (isOpen && !initialLines) {
             setLines('');
+            setSubtitle('');
         }
     }, [isOpen, initialLines]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const id = uuidv4().slice(0, 8); // Short UUID for cleaner YAML
+        const id = uuidv4().slice(0, 8);
         const label = sectionLabel || (type.charAt(0).toUpperCase() + type.slice(1));
 
         // Construct YAML snippet
         let snippet = `  - id: "${id}"\n`;
         snippet += `    type: "${type}"\n`;
         snippet += `    label: "${label}"\n`;
+        if (subtitle.trim()) {
+            snippet += `    subtitle: "${subtitle.trim()}"\n`;
+        }
         snippet += `    lines:\n`;
 
         const lineArray = lines.split('\n').map(l => l.trim()).filter(l => l !== '');
@@ -90,6 +91,7 @@ export function InsertSectionModal({ isOpen, onClose, onInsert, initialLines }: 
         // Reset state
         setType('verse');
         setSectionLabel('Verse');
+        setSubtitle('');
         setLines('');
     };
 
@@ -97,6 +99,7 @@ export function InsertSectionModal({ isOpen, onClose, onInsert, initialLines }: 
         <Modal isOpen={isOpen} onClose={onClose} title="Add New Section">
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
+                    {/* Type Select */}
                     <label htmlFor="section-type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Section Type
                     </label>
@@ -114,18 +117,33 @@ export function InsertSectionModal({ isOpen, onClose, onInsert, initialLines }: 
                     </select>
                 </div>
 
-                <div>
-                    <label htmlFor="section-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Section Label
-                    </label>
-                    <input
-                        id="section-label"
-                        type="text"
-                        value={sectionLabel}
-                        onChange={(e) => setSectionLabel(e.target.value)}
-                        placeholder="e.g., Verse 1, Bridge 2"
-                        className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm text-gray-900 dark:text-gray-100"
-                    />
+                <div className="flex gap-4">
+                    <div className="flex-1">
+                        <label htmlFor="section-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Section Label
+                        </label>
+                        <input
+                            id="section-label"
+                            type="text"
+                            value={sectionLabel}
+                            onChange={(e) => setSectionLabel(e.target.value)}
+                            placeholder="e.g., Verse 1"
+                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm text-gray-900 dark:text-gray-100"
+                        />
+                    </div>
+                    <div className="flex-1">
+                        <label htmlFor="section-subtitle" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Subtitle (Optional)
+                        </label>
+                        <input
+                            id="section-subtitle"
+                            type="text"
+                            value={subtitle}
+                            onChange={(e) => setSubtitle(e.target.value)}
+                            placeholder="e.g., Build"
+                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm text-gray-900 dark:text-gray-100"
+                        />
+                    </div>
                 </div>
 
                 <div>
@@ -139,7 +157,7 @@ export function InsertSectionModal({ isOpen, onClose, onInsert, initialLines }: 
                         rows={4}
                         placeholder={type === 'grid'
                             ? "Enter chords separated by pipes |\n| C | G | Am | F |\n| C | G | C | |"
-                            : "Type lyrics or chords here...&#10;One line per row."}
+                            : "Type lyrics or chords here...\nOne line per row."}
                         className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm font-mono text-gray-900 dark:text-gray-100"
                     />
                 </div>
