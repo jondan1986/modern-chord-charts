@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Song, Theme } from '@/mcs-core/model';
 import { ChordService, Instrument } from '@/src/services/chords/chord-db';
 import { ChordDiagram } from './ChordDiagram';
+import { formatChordForDisplay } from '@/src/utils/chord-display';
 
 interface Props {
     song: Song;
@@ -88,7 +89,7 @@ export const ChordList: React.FC<Props> = ({ song, theme }) => {
 
                         return (
                             <div key={chordName} className="flex flex-col items-center gap-2">
-                                <div className="font-bold text-sm">{chordName}</div>
+                                <div className="font-bold text-sm">{formatChordForDisplay(chordName)}</div>
                                 {position ? (
                                     <ChordDiagram
                                         position={position}

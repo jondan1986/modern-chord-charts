@@ -25,3 +25,55 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Print styles */
+@media print {
+  /* Hide all UI chrome */
+  .header,
+  .action-bar,
+  nav,
+  button,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset layout constraints */
+  body {
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  main {
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  /* Optimize song viewer for print */
+  .song-viewer {
+    padding: 0 !important;
+    min-height: auto !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Force black text for all styled elements */
+  .song-viewer * {
+    color: black !important;
+  }
+
+  /* Keep chord color distinct but printable */
+  .song-viewer .select-none {
+    color: #333 !important;
+    font-weight: bold !important;
+  }
+
+  /* Page break control */
+  .break-inside-avoid {
+    break-inside: avoid;
+  }
+
+  /* Proper margins */
+  @page {
+    margin: 0.5in;
+  }
+}

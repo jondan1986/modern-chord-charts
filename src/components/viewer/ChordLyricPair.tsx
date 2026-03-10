@@ -2,6 +2,7 @@
 import { LineSegment } from "@/mcs-core/model";
 import { Theme } from "@/mcs-core/model";
 import React from "react";
+import { formatChordForDisplay } from "@/src/utils/chord-display";
 
 interface Props {
     segment: LineSegment;
@@ -11,8 +12,7 @@ interface Props {
 export const ChordLyricPair: React.FC<Props> = ({ segment, theme }) => {
     const { chord, lyric } = segment;
 
-    // CSS for positioning chord above lyric
-    // We use flex-col for 'above' positioning
+    const hasChordNoLyric = !!chord && (!lyric || lyric.trim() === '');
 
     const chordStyle: React.CSSProperties = {
         color: theme.colors.chord,
@@ -29,15 +29,18 @@ export const ChordLyricPair: React.FC<Props> = ({ segment, theme }) => {
         fontFamily: theme.typography.font_family_lyrics,
         fontSize: theme.typography.size_lyrics,
         lineHeight: theme.typography.line_height,
-        whiteSpace: "pre-wrap", // Preserve spaces!
+        whiteSpace: "pre-wrap",
     };
 
     return (
-        <div className="flex flex-col items-start leading-none relative group">
+        <div
+            className="flex flex-col items-start leading-none relative group"
+            style={{ minWidth: hasChordNoLyric ? '2.5em' : undefined }}
+        >
             {/* Chord */}
             {chord && (
                 <div style={chordStyle} className="select-none">
-                    {chord}
+                    {formatChordForDisplay(chord)}
                 </div>
             )}
 

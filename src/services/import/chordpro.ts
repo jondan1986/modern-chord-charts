@@ -1,5 +1,3 @@
-import { JSDOM } from 'jsdom';
-
 export class ChordProConverter {
     static convert(chordPro: string): string {
         const lines = chordPro.split(/\r?\n/);
@@ -17,6 +15,14 @@ export class ChordProConverter {
                 type: type.toLowerCase(),
                 lines: []
             };
+        };
+
+        // Helper to close current section
+        const endSection = () => {
+            if (currentSection) {
+                sections.push(currentSection);
+                currentSection = null;
+            }
         };
 
         const processLine = (line: string) => {
@@ -49,32 +55,48 @@ export class ChordProConverter {
                     case "tempo":
                         metadata.tempo = parseInt(value, 10);
                         break;
-                    // Sections
+                    case "capo":
+                        metadata.capo = parseInt(value, 10) || value;
+                        break;
+                    case "copyright":
+                        metadata.copyright = value;
+                        break;
+                    // Comments
                     case "c":
                     case "comment":
+                        if (currentSection && value) {
+                            currentSection.subtitle = value;
+                        }
+                        break;
+                    // Sections
                     case "soc":
                     case "start_of_chorus":
                         startSection("Chorus", "chorus");
-                        if (key === "c" || key === "comment") {
-                            // usually {c: Chorus} acts as label implies next block is chorus
-                            // but sometimes it is just a comment. 
-                            // For our purposes, if it starts a section, we use the value as label.
-                            if (value) currentSection.label = value;
-                        }
                         break;
                     case "sov":
                     case "start_of_verse":
                         startSection("Verse", "verse");
                         break;
+                    case "sob":
+                    case "start_of_bridge":
+                        startSection("Bridge", "bridge");
+                        break;
+                    case "sot":
+                    case "start_of_tab":
+                        startSection("Tab", "instrumental");
+                        break;
                     case "eoc":
                     case "end_of_chorus":
                     case "eov":
                     case "end_of_verse":
-                        // Maybe handle explicitly, but startSection logic handles implicit closing.
+                    case "eob":
+                    case "end_of_bridge":
+                    case "eot":
+                    case "end_of_tab":
+                        endSection();
                         break;
                     default:
-                        // Treat as comment or unknown directive. 
-                        // Could insert into current section as comment line?
+                        // Treat as comment or unknown directive.
                         break;
                 }
                 return;
@@ -116,6 +138,8 @@ export class ChordProConverter {
         if (metadata.key) yaml += `  key: "${metadata.key}"\n`;
         if (metadata.tempo) yaml += `  tempo: ${metadata.tempo}\n`;
         if (metadata.time_signature) yaml += `  time_signature: "${metadata.time_signature}"\n`;
+        if (metadata.capo) yaml += `  capo: ${metadata.capo}\n`;
+        if (metadata.copyright) yaml += `  copyright: "${metadata.copyright}"\n`;
 
         yaml += "\nsections:\n";
         sections.forEach((sec: any) => {
@@ -123,19 +147,10 @@ export class ChordProConverter {
             const id = crypto.randomUUID();
             yaml += `  - id: "${id}"\n`;
             yaml += `    label: "${sec.label}"\n`;
-            // try to map type if standard
-            let type = "other";
-            const l = sec.label.toLowerCase();
-            if (l.includes("chorus")) type = "chorus";
-            else if (l.includes("verse")) type = "verse";
-            else if (l.includes("bridge")) type = "bridge";
-            else if (l.includes("intro")) type = "intro";
-            else if (l.includes("outro")) type = "outro";
-            else if (l.includes("tag")) type = "tag";
-            else if (l.includes("instrumental")) type = "instrumental";
-            else if (l.includes("hook")) type = "hook";
-
-            yaml += `    type: "${type}"\n`;
+            yaml += `    type: "${sec.type}"\n`;
+            if (sec.subtitle) {
+                yaml += `    subtitle: "${sec.subtitle}"\n`;
+            }
             yaml += `    lines:\n`;
             sec.lines.forEach((line: string) => {
                 // Escape double quotes in line

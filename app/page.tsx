@@ -15,6 +15,10 @@ export default function LibraryPage() {
 
     const loadSong = useAppStore((state) => state.loadSong);
     const theme = useAppStore((state) => state.theme);
+    const selectedSongId = useAppStore((state) => state.selectedSongId);
+    const selectedSetlistId = useAppStore((state) => state.selectedSetlistId);
+    const setSelectedSongId = useAppStore((state) => state.setSelectedSongId);
+    const setSelectedSetlistId = useAppStore((state) => state.setSelectedSetlistId);
     const router = useRouter();
 
     useEffect(() => {
@@ -35,18 +39,6 @@ export default function LibraryPage() {
         router.push("/viewer");
     };
 
-    const handleEditSong = async (id: string) => {
-        await loadSong(id);
-        router.push("/editor");
-    };
-
-    const handleDeleteSong = async (id: string) => {
-        if (confirm("Are you sure you want to delete this song?")) {
-            await songStorage.deleteSong(id);
-            loadLibrary();
-        }
-    };
-
     // --- Setlist Handlers ---
     const handleCreateSetlist = async () => {
         const name = prompt("Enter setlist name:"); // Simple prompt for now
@@ -60,23 +52,29 @@ export default function LibraryPage() {
         router.push(`/setlist/${id}`);
     };
 
-    const handleDeleteSetlist = async (id: string) => {
-        if (confirm("Are you sure you want to delete this setlist?")) {
-            await songStorage.deleteSetlist(id);
-            loadLibrary();
-        }
+    const handleSwitchTab = (tab: 'songs' | 'setlists') => {
+        setActiveTab(tab);
+        setSelectedSongId(null);
+        setSelectedSetlistId(null);
     };
 
+    const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        // Only clear selection if the click target is the container itself (not a card)
+        if (e.target === e.currentTarget) {
+            setSelectedSongId(null);
+            setSelectedSetlistId(null);
+        }
+    };
 
     const pageStyle = { backgroundColor: theme.colors.background, color: theme.colors.text_primary };
     const headerStyle = { borderColor: theme.colors.section_header };
 
     return (
-        <div className="p-8 max-w-5xl mx-auto h-full overflow-y-auto" style={pageStyle}>
+        <div className="p-4 md:p-8 max-w-5xl mx-auto h-full overflow-y-auto" style={pageStyle} onClick={handleContainerClick}>
             {/* Header */}
             <div className="flex justify-between items-center mb-6 border-b pb-4" style={headerStyle}>
                 <div className="flex items-center gap-4">
-                    <h1 className="text-3xl font-bold">📚 Library</h1>
+                    <h1 className="text-3xl font-bold">Library</h1>
                     <div className="flex gap-1 ml-4">
                         <button
                             onClick={async () => {
@@ -152,13 +150,13 @@ export default function LibraryPage() {
                 {/* Tabs */}
                 <div className="flex gap-2">
                     <button
-                        onClick={() => setActiveTab('songs')}
+                        onClick={() => handleSwitchTab('songs')}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition ${activeTab === 'songs' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}
                     >
                         Songs ({songs.length})
                     </button>
                     <button
-                        onClick={() => setActiveTab('setlists')}
+                        onClick={() => handleSwitchTab('setlists')}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition ${activeTab === 'setlists' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}
                     >
                         Setlists ({setlists.length})
@@ -171,17 +169,17 @@ export default function LibraryPage() {
                 <SongList
                     songs={songs}
                     theme={theme}
+                    selectedId={selectedSongId}
+                    onSelect={setSelectedSongId}
                     onOpen={handleOpenSong}
-                    onEdit={handleEditSong}
-                    onDelete={handleDeleteSong}
                 />
             ) : (
                 <SetlistList
                     setlists={setlists}
                     theme={theme}
+                    selectedId={selectedSetlistId}
+                    onSelect={setSelectedSetlistId}
                     onOpen={handleOpenSetlist}
-                    onEdit={handleOpenSetlist}
-                    onDelete={handleDeleteSetlist}
                     onCreate={handleCreateSetlist}
                 />
             )}

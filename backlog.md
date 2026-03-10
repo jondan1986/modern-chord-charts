@@ -2,27 +2,21 @@
 
 ## 📋 Not Complete
 
-- [ ] **Theme Editor**: Implement the theme editor and scope out all the different themeable properties.
-  - Follow Tailwind's theme system (column count, font size, autofit for Letter/A4).
-  - Options for themeable section types (Verse, Chorus, Bridge, etc.) and borders/shadows.
-  - Allow user to edit themeable properties in the theme editor.
-  - Viewer and Editor should allow theme selection from a list.
-- [ ] **Custom Metadata**: Support the addition of "Custom" metadata attributes.
-
-- [ ] **PDF Export / Print Function**: Implement export to formatted PDF (easy to read/print).
-- [ ] **ChordPro Export**:
-- [ ] **Chord Formatting Issue**: specific fix for chords spaced closely together.
-  - If chords are adjacent, add at least one space and align lyrics.
-- [ ] **Mobile Optimization**: Ensure the app looks/feels great on mobile.
-  - Fix scrolling in the viewer on mobile.
-- [ ] **Bug Fix**: Syntax Error when inserting a new section without lines.
-  - `Syntax Error: Unexpected scalar at node end...`
-- [ ] **Encoding Sharps and Flats**: Render 'b' and '#' as the true Unicode characters for the musical notation.
-- [ ] **Re-Implement Setlists**: Create, manage, save, load, and share setlists, Print Setlists, (extending existing print functionality)
-- [ ] **Library UX Fixes**: All Library action buttons should appear on the action bar, and not as single icons next to the Library card title.
-- [ ] **Better ChordPro Imports/Exports**: Right now chordpro imports just import the song as One Big Verse Section and don't import sections correctly. They also don't import meta correctly. Implement export to formatted ChordPro (easy to read/print).
+- [ ] **Theme Editor (Phase 2)**: Per-section-type colors (verse bg, chorus bg, etc.), border and shadow customization. Expand Theme model with `sectionStyles` map.
 
 ## ✅ Complete
+
+- [x] **Theme Editor (Core)**: Color pickers, font controls, layout toggles, 4 preset themes (Light, Dark, High Contrast, Projection), custom theme save/load via localStorage, theme dropdown in header.
+- [x] **Custom Metadata**: Dynamic key-value custom fields in Edit Metadata modal. Displayed in viewer metadata area. Data model already supported via Zod catchall.
+- [x] **PDF Export / Print Function**: Browser `window.print()` with `@media print` CSS. Print button on viewer ActionBar. Hides UI chrome, optimizes for B&W.
+- [x] **ChordPro Export**: `ChordProExporter` converts Song objects to ChordPro format. Export button on viewer ActionBar.
+- [x] **Chord Formatting Issue**: Added `minWidth: 2.5em` on ChordLyricPair when segment has chord but no lyric, preventing adjacent chord collision.
+- [x] **Mobile Optimization**: Responsive editor (pane toggle on mobile), responsive header/action bar, mobile padding, fixed scroll trapping via `overflow-auto` on main.
+- [x] **Bug Fix: Empty Section Syntax Error**: Changed InsertSectionModal to output `lines: []` instead of `lines: [" "]` when no content is entered.
+- [x] **Encoding Sharps and Flats**: `formatChordForDisplay()` utility converts `#` to `♯` and flat `b` to `♭` at render time. Applied in ChordLyricPair, ChordList, GridRenderer, and SongViewer key display.
+- [x] **Re-Implement Setlists**: SQLite storage, CRUD UI, setlist playback with keyboard navigation. Completed during v1.0.0 release work.
+- [x] **Library UX Fixes**: Selection-based model. Single-click selects a card, double-click opens. Action buttons (Open, Edit, Export, Delete) appear in the ActionBar based on selection.
+- [x] **Better ChordPro Imports/Exports**: Fixed `{comment}` not creating chorus, added bridge/tab directives, fixed type re-inference bug, added capo/copyright, proper section closing. Export implemented separately.
 
 - [x] **Section Comments**: Have a Section "subtitle" that includes a short phrase or note about the section. i.e. Breakdown or All-In or Accapella or Out on Beat 3, etc.
 

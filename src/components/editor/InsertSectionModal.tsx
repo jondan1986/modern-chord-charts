@@ -75,12 +75,11 @@ export function InsertSectionModal({ isOpen, onClose, onInsert, initialLines }: 
         if (subtitle.trim()) {
             snippet += `    subtitle: "${subtitle.trim()}"\n`;
         }
-        snippet += `    lines:\n`;
-
         const lineArray = lines.split('\n').map(l => l.trim()).filter(l => l !== '');
         if (lineArray.length === 0) {
-            snippet += `      - " "\n`;
+            snippet += `    lines: []\n`;
         } else {
+            snippet += `    lines:\n`;
             lineArray.forEach(line => {
                 snippet += `      - "${line}"\n`;
             });

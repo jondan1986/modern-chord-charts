@@ -1,6 +1,7 @@
 import React from 'react';
 import { Section, Theme } from '@/mcs-core/model';
 import { clsx } from 'clsx';
+import { formatChordForDisplay } from '@/src/utils/chord-display';
 
 interface Props {
     section: Section;
@@ -63,7 +64,7 @@ export const GridRenderer: React.FC<Props> = ({ section, theme }) => {
                                             : "border-gray-300 bg-gray-50 text-blue-600"
                                     )}
                                 >
-                                    {bar}
+                                    {formatChordForDisplay(bar)}
                                 </div>
                             ))}
                         </div>

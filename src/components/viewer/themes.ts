@@ -52,3 +52,57 @@ export const DARK_THEME: Theme = {
         notation_system: "western",
     },
 };
+
+export const HIGH_CONTRAST_THEME: Theme = {
+    name: "High Contrast",
+    colors: {
+        background: "#000000",
+        text_primary: "#ffffff",
+        text_secondary: "#cccccc",
+        chord: "#00ff00",
+        section_header: "#ffffff",
+        highlight: "#ffff00",
+    },
+    typography: {
+        font_family_lyrics: "Arial, sans-serif",
+        font_family_chords: "Arial, sans-serif",
+        size_lyrics: 16,
+        size_chords: 14,
+        weight_chords: "700",
+        line_height: 1.8,
+    },
+    layout: {
+        show_diagrams: true,
+        two_column: false,
+        chord_position: "above",
+        notation_system: "western",
+    },
+};
+
+export const PROJECTION_THEME: Theme = {
+    name: "Projection",
+    colors: {
+        background: "#000000",
+        text_primary: "#ffffff",
+        text_secondary: "#aaaaaa",
+        chord: "#fbbf24",
+        section_header: "#fbbf24",
+        highlight: "#fbbf24",
+    },
+    typography: {
+        font_family_lyrics: "Arial, sans-serif",
+        font_family_chords: "Arial, sans-serif",
+        size_lyrics: 28,
+        size_chords: 26,
+        weight_chords: "700",
+        line_height: 2.0,
+    },
+    layout: {
+        show_diagrams: false,
+        two_column: false,
+        chord_position: "above",
+        notation_system: "western",
+    },
+};
+
+export const ALL_THEMES: Theme[] = [DEFAULT_THEME, DARK_THEME, HIGH_CONTRAST_THEME, PROJECTION_THEME];

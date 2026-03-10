@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 
 import { songStorage } from '@/src/services/storage';
-import { DEFAULT_THEME, DARK_THEME } from "@/src/components/viewer/themes";
+import { DEFAULT_THEME, ALL_THEMES } from "@/src/components/viewer/themes";
 import { Theme } from "@/src/mcs-core/model";
 
 interface AppState {
@@ -10,17 +10,27 @@ interface AppState {
   activeSongId: string | undefined; // Undefined = New/Unsaved
   theme: Theme;
   lastSavedYaml: string;
+  customThemes: Theme[];
 
   // Setlist Mode
   activeSetlistId: string | null;
   activeSetlistSongs: string[]; // List of song IDs in order
   currentSetlistIndex: number;
 
+  // Library Selection
+  selectedSongId: string | null;
+  selectedSetlistId: string | null;
+
   setActiveYaml: (yaml: string) => void;
   loadSong: (id: string) => Promise<void>;
   saveCurrentSong: () => Promise<void>;
   resetSong: () => void;
   toggleTheme: () => void;
+  setTheme: (theme: Theme) => void;
+  saveCustomTheme: (theme: Theme) => void;
+  deleteCustomTheme: (name: string) => void;
+  setSelectedSongId: (id: string | null) => void;
+  setSelectedSetlistId: (id: string | null) => void;
 
   // Setlist Actions
   startSetlist: (id: string, songIds: string[]) => Promise<void>;
@@ -54,20 +64,70 @@ sections:
       - "Un[Em]ending [D]love, A[G]mazing grace"
 `;
 
+function loadCustomThemes(): Theme[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const stored = localStorage.getItem("mcc-custom-themes");
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCustomThemesToStorage(themes: Theme[]) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem("mcc-custom-themes", JSON.stringify(themes));
+  } catch {
+    // ignore storage errors
+  }
+}
+
 export const useAppStore = create<AppState>((set, get) => ({
   activeYaml: DEFAULT_YAML,
   activeSongId: undefined,
   theme: DEFAULT_THEME,
   lastSavedYaml: DEFAULT_YAML,
+  customThemes: loadCustomThemes(),
   activeSetlistId: null,
   activeSetlistSongs: [],
   currentSetlistIndex: -1,
+  selectedSongId: null,
+  selectedSetlistId: null,
 
   setActiveYaml: (yaml) => set({ activeYaml: yaml }),
 
+  setSelectedSongId: (id) => set({ selectedSongId: id, selectedSetlistId: null }),
+  setSelectedSetlistId: (id) => set({ selectedSetlistId: id, selectedSongId: null }),
+
   toggleTheme: () => {
     const current = get().theme;
-    set({ theme: current.name === "Dark Mode" ? DEFAULT_THEME : DARK_THEME });
+    const allThemes = [...ALL_THEMES, ...get().customThemes];
+    const currentIndex = allThemes.findIndex((t) => t.name === current.name);
+    const nextIndex = (currentIndex + 1) % allThemes.length;
+    set({ theme: allThemes[nextIndex] });
+  },
+
+  setTheme: (theme: Theme) => {
+    set({ theme });
+  },
+
+  saveCustomTheme: (theme: Theme) => {
+    const existing = get().customThemes;
+    const filtered = existing.filter((t) => t.name !== theme.name);
+    const updated = [...filtered, theme];
+    saveCustomThemesToStorage(updated);
+    set({ customThemes: updated, theme });
+  },
+
+  deleteCustomTheme: (name: string) => {
+    const updated = get().customThemes.filter((t) => t.name !== name);
+    saveCustomThemesToStorage(updated);
+    const newState: Partial<AppState> = { customThemes: updated };
+    if (get().theme.name === name) {
+      newState.theme = DEFAULT_THEME;
+    }
+    set(newState);
   },
 
   loadSong: async (id) => {

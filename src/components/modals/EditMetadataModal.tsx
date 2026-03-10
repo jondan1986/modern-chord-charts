@@ -11,6 +11,8 @@ interface EditMetadataModalProps {
     onSave: (metadata: SongMetadata) => void;
 }
 
+const KNOWN_METADATA_KEYS = new Set(['title', 'artist', 'key', 'tempo', 'time_signature', 'year', 'themes', 'copyright', 'ccli']);
+
 export function EditMetadataModal({ isOpen, onClose, initialMetadata, onSave }: EditMetadataModalProps) {
     const [formData, setFormData] = useState<Partial<SongMetadata>>({
         title: '',
@@ -20,6 +22,7 @@ export function EditMetadataModal({ isOpen, onClose, initialMetadata, onSave }: 
         time_signature: '',
         year: undefined,
     });
+    const [customFields, setCustomFields] = useState<{ key: string; value: string }[]>([]);
 
     // Reset form when modal opens with new data
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -33,6 +36,13 @@ export function EditMetadataModal({ isOpen, onClose, initialMetadata, onSave }: 
                 time_signature: initialMetadata.time_signature || '',
                 year: initialMetadata.year,
             });
+            // Extract custom fields
+            const custom = Object.entries(initialMetadata)
+                .filter(([k]) => !KNOWN_METADATA_KEYS.has(k))
+                .map(([key, value]) => ({ key, value: String(value ?? '') }));
+            setCustomFields(custom);
+        } else if (isOpen) {
+            setCustomFields([]);
         }
     }, [isOpen, initialMetadata]);
 
@@ -47,13 +57,22 @@ export function EditMetadataModal({ isOpen, onClose, initialMetadata, onSave }: 
         // We should merge with existing metadata to ensure we don't lose other fields? 
         // For now, let's assume we are editing these specific fields.
 
-        const payload = {
+        const payload: Record<string, any> = {
             ...initialMetadata,
             ...formData,
-            // Clean up empty strings to undefined if optional?
-            // Schema has specific requirements.
-            // If tempo is NaN, it might be an issue.
         };
+
+        // Merge custom fields
+        // First remove any old custom keys that were removed
+        if (initialMetadata) {
+            Object.keys(initialMetadata)
+                .filter(k => !KNOWN_METADATA_KEYS.has(k))
+                .forEach(k => delete payload[k]);
+        }
+        // Then add current custom fields
+        customFields.forEach(({ key, value }) => {
+            if (key.trim()) payload[key.trim()] = value;
+        });
 
         // Zod Validation
         const result = MetadataSchema.safeParse(payload);
@@ -163,6 +182,57 @@ export function EditMetadataModal({ isOpen, onClose, initialMetadata, onSave }: 
                         />
                         {errors.year && <p className="text-red-500 text-xs mt-1">{errors.year}</p>}
                     </div>
+                </div>
+
+                {/* Custom Fields */}
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Custom Fields</label>
+                        <button
+                            type="button"
+                            onClick={() => setCustomFields(prev => [...prev, { key: '', value: '' }])}
+                            className="text-xs px-2 py-1 text-blue-600 hover:text-blue-500 border border-blue-200 dark:border-blue-900 rounded"
+                        >
+                            + Add Field
+                        </button>
+                    </div>
+                    {customFields.map((field, idx) => (
+                        <div key={idx} className="flex gap-2 mb-2 items-center">
+                            <input
+                                type="text"
+                                value={field.key}
+                                onChange={(e) => {
+                                    const updated = [...customFields];
+                                    updated[idx] = { ...updated[idx], key: e.target.value };
+                                    setCustomFields(updated);
+                                }}
+                                placeholder="Key"
+                                className="w-1/3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-1.5 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 dark:text-gray-100"
+                            />
+                            <input
+                                type="text"
+                                value={field.value}
+                                onChange={(e) => {
+                                    const updated = [...customFields];
+                                    updated[idx] = { ...updated[idx], value: e.target.value };
+                                    setCustomFields(updated);
+                                }}
+                                placeholder="Value"
+                                className="flex-1 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-1.5 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 dark:text-gray-100"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setCustomFields(prev => prev.filter((_, i) => i !== idx))}
+                                className="text-red-500 hover:text-red-700 text-sm px-1"
+                                title="Remove field"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    ))}
+                    {customFields.length === 0 && (
+                        <p className="text-xs text-gray-400 italic">No custom fields. Click &quot;+ Add Field&quot; to add one.</p>
+                    )}
                 </div>
 
                 <div className="flex justify-end pt-2">

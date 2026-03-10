@@ -13,6 +13,7 @@ interface Props {
 }
 
 import { transposeChord, getTargetKey, getKeyPreference } from "@/src/mcs-core/transpose";
+import { formatChordForDisplay } from "@/src/utils/chord-display";
 
 export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEditMetadata }) => {
     const [activeArrangementIdx, setActiveArrangementIdx] = React.useState<number | null>(null);
@@ -79,7 +80,7 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
 
     return (
         <div
-            className={`song-viewer min-h-screen p-8 transition-colors duration-200 font-sans ${theme.name === "Dark Mode" ? "bg-gray-900 text-gray-50" : "bg-white text-gray-800"
+            className={`song-viewer min-h-screen p-4 md:p-8 transition-colors duration-200 font-sans ${theme.name === "Dark Mode" ? "bg-gray-900 text-gray-50" : "bg-white text-gray-800"
                 }`}
         >
             {/* Header */}
@@ -115,14 +116,14 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
                                     <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">
                                         <button
                                             onClick={() => setTransposeSteps(s => s - 1)}
-                                            className="hover:text-blue-500 px-1 font-bold"
+                                            className="no-print hover:text-blue-500 px-1 font-bold"
                                         >-</button>
                                         <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                            Key: {displayedSong.metadata.key || "?"}
+                                            Key: {formatChordForDisplay(displayedSong.metadata.key || "?")}
                                         </span>
                                         <button
                                             onClick={() => setTransposeSteps(s => s + 1)}
-                                            className="hover:text-blue-500 px-1 font-bold"
+                                            className="no-print hover:text-blue-500 px-1 font-bold"
                                         >+</button>
                                     </div>
 
@@ -143,11 +144,25 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
                                 ))}
                             </div>
                         )}
+
+                        {/* Custom metadata fields */}
+                        {(() => {
+                            const knownKeys = new Set(['title', 'artist', 'key', 'tempo', 'time_signature', 'year', 'themes', 'copyright', 'ccli']);
+                            const customEntries = Object.entries(displayedSong.metadata).filter(([k]) => !knownKeys.has(k));
+                            if (customEntries.length === 0) return null;
+                            return (
+                                <div className={`text-xs opacity-60 mt-1 flex flex-wrap gap-x-3 ${theme.name === "Dark Mode" ? "text-gray-400" : "text-gray-500"}`}>
+                                    {customEntries.map(([k, v]) => (
+                                        <span key={k} className="capitalize">{k}: {String(v)}</span>
+                                    ))}
+                                </div>
+                            );
+                        })()}
                     </div>
 
                     {/* Arrangement Selector */}
                     {displayedSong.arrangements && displayedSong.arrangements.length > 0 && (
-                        <div className="flex flex-col items-end gap-2">
+                        <div className="no-print flex flex-col items-end gap-2">
                             <span className="text-xs font-semibold opacity-70">ARRANGEMENT</span>
                             <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
                                 <button
