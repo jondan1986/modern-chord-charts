@@ -16,7 +16,7 @@ export const SongList: React.FC<Props> = ({ songs, theme, onOpen, onEdit, onDele
         return (
             <div className="text-center py-20 text-gray-500 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-dashed dark:border-gray-700">
                 <p className="text-xl font-medium">Your library is empty.</p>
-                <p className="mt-2 text-sm">Create a new song using the "New Song" button or import a backup.</p>
+                <p className="mt-2 text-sm">Create a new song using the &quot;New Song&quot; button or import a backup.</p>
             </div>
         );
     }

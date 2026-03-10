@@ -22,6 +22,7 @@ export function EditMetadataModal({ isOpen, onClose, initialMetadata, onSave }: 
     });
 
     // Reset form when modal opens with new data
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => {
         if (isOpen && initialMetadata) {
             setFormData({

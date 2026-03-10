@@ -12,7 +12,7 @@ const KEY_PREFERENCE: { [key: string]: 'sharp' | 'flat' } = {
 
 function getNoteIndex(note: string): number {
     const n = note.toUpperCase();
-    let idx = NOTES_SHARP.indexOf(n);
+    const idx = NOTES_SHARP.indexOf(n);
     if (idx !== -1) return idx;
     return NOTES_FLAT.indexOf(n);
 }

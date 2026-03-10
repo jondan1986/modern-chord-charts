@@ -20,10 +20,6 @@ export default function SetlistDetailPage() {
     const [isPickerOpen, setIsPickerOpen] = useState(false);
     const [editName, setEditName] = useState("");
 
-    useEffect(() => {
-        loadData();
-    }, [id]);
-
     const loadData = async () => {
         const s = await songStorage.getSetlist(id);
         if (!s) {
@@ -40,6 +36,11 @@ export default function SetlistDetailPage() {
         allSongs.forEach(song => map[song.id] = song);
         setSongsMap(map);
     };
+
+    useEffect(() => {
+        loadData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
 
     const handleSaveName = async () => {
         if (setlist && editName !== setlist.title) {
@@ -189,7 +190,7 @@ export default function SetlistDetailPage() {
 
                 {setlist.songs.length === 0 && (
                     <div className="text-center py-10 text-gray-400 border border-dashed rounded-lg">
-                        This setlist is empty. Click "Add Song" to start building it.
+                        This setlist is empty. Click &quot;Add Song&quot; to start building it.
                     </div>
                 )}
             </div>
