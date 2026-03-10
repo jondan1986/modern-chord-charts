@@ -1,83 +1,89 @@
-import { listSongs, saveSongFile, deleteSongFile, FileSong } from '@/src/actions/file-storage';
+import {
+  listSongs,
+  getSongFile,
+  saveSongFile,
+  deleteSongFile,
+  listSetlists,
+  getSetlistFile,
+  saveSetlistFile,
+  deleteSetlistFile,
+  FileSong,
+} from '@/src/actions/file-storage';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface StoredSong {
-    id: string; // filename
-    title: string; // display title
-    artist: string;
-    yaml: string; // full content
-    updatedAt: number;
+  id: string;
+  title: string;
+  artist: string;
+  yaml: string;
+  updatedAt: number;
 }
 
 export interface StoredSetlist {
-    id: string;
-    title: string;
-    songs: string[];
-    updatedAt: number;
+  id: string;
+  title: string;
+  songs: string[];
+  updatedAt: number;
 }
 
-// Re-export interface to match expected types locally if needed,
-// but we updated index.ts so we are editing strict place.
-// The previous interface was:
-// export interface StoredSong { id, title, artist, yaml, updatedAt }
-// Our new FileSong matches this signature.
+function toStoredSong(f: FileSong): StoredSong {
+  return { id: f.id, title: f.title, artist: f.artist, yaml: f.yaml, updatedAt: f.updatedAt };
+}
 
 class FileStorageService {
 
-    // --- Songs ---
+  // --- Songs ---
 
-    async saveSong(yaml: string, existingId?: string): Promise<string> {
-        // existingId is the filename
-        return await saveSongFile(yaml, existingId);
-    }
+  async saveSong(yaml: string, existingId?: string): Promise<string> {
+    return saveSongFile(yaml, existingId);
+  }
 
-    async getSong(id: string): Promise<StoredSong | undefined> {
-        // We can just fetch all and find, or implement single read action.
-        // For efficiency, let's just fetch all for now or add getFile action later.
-        // Given local fs, reading all headers isn't too expensive for small libraries.
-        // But better: use listSongs() which reads all.
-        // To optimize, we should add `getSongFile` action.
-        // For now, reuse listSongs.
-        const songs = await listSongs();
-        return songs.find(s => s.id === id);
-    }
+  async getSong(id: string): Promise<StoredSong | undefined> {
+    const song = await getSongFile(id);
+    return song ? toStoredSong(song) : undefined;
+  }
 
-    async getAllSongs(): Promise<StoredSong[]> {
-        return await listSongs();
-    }
+  async getAllSongs(): Promise<StoredSong[]> {
+    const songs = await listSongs();
+    return songs.map(toStoredSong);
+  }
 
-    async deleteSong(id: string): Promise<void> {
-        return await deleteSongFile(id);
-    }
+  async deleteSong(id: string): Promise<void> {
+    return deleteSongFile(id);
+  }
 
-    // --- Setlists ---
-    // (Stubbed for now, as file-system setlists are a new req if we strictly follow file structure.
-    // We could store setlists as .json files in /setlists folder?)
+  // --- Setlists ---
 
-    async saveSetlist(setlist: Partial<StoredSetlist>): Promise<string> {
-        console.warn("Setlist storage not yet implemented for File System mode.");
-        return "mock-id";
-    }
+  async saveSetlist(setlist: Partial<StoredSetlist>): Promise<string> {
+    const id = setlist.id ?? uuidv4();
+    const name = setlist.title ?? 'Untitled Setlist';
+    const songIds = setlist.songs ?? [];
+    return saveSetlistFile(id, name, songIds);
+  }
 
-    async getSetlist(id: string): Promise<StoredSetlist | undefined> {
-        return undefined;
-    }
+  async getSetlist(id: string): Promise<StoredSetlist | undefined> {
+    const s = await getSetlistFile(id);
+    if (!s) return undefined;
+    return { id: s.id, title: s.name, songs: s.songIds, updatedAt: s.updatedAt };
+  }
 
-    async getAllSetlists(): Promise<StoredSetlist[]> {
-        return [];
-    }
+  async getAllSetlists(): Promise<StoredSetlist[]> {
+    const setlists = await listSetlists();
+    return setlists.map(s => ({ id: s.id, title: s.name, songs: s.songIds, updatedAt: s.updatedAt }));
+  }
 
-    async deleteSetlist(id: string): Promise<void> {
-        // no-op
-    }
+  async deleteSetlist(id: string): Promise<void> {
+    return deleteSetlistFile(id);
+  }
 
-    // Backup/Restore
-    async exportLibrary(): Promise<string> {
-        return "";
-    }
+  // Backup/Restore
+  async exportLibrary(): Promise<string> {
+    return "";
+  }
 
-    async importLibrary(json: string): Promise<void> {
-        // no-op
-    }
+  async importLibrary(_json: string): Promise<void> {
+    // no-op
+  }
 }
 
 export const songStorage = new FileStorageService();

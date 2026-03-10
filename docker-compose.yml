@@ -1,0 +1,11 @@
+services:
+  chord-charts:
+    image: ghcr.io/jondan1986/modern-chord-charts:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - chord_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  chord_data:
