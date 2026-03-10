@@ -18,6 +18,7 @@ export function EditMetadataModal({ isOpen, onClose, initialMetadata, onSave }: 
         key: '',
         tempo: undefined,
         time_signature: '',
+        year: undefined,
     });
 
     // Reset form when modal opens with new data
@@ -29,7 +30,7 @@ export function EditMetadataModal({ isOpen, onClose, initialMetadata, onSave }: 
                 key: initialMetadata.key || '',
                 tempo: initialMetadata.tempo,
                 time_signature: initialMetadata.time_signature || '',
-                // Add others as needed
+                year: initialMetadata.year,
             });
         }
     }, [isOpen, initialMetadata]);
@@ -147,6 +148,19 @@ export function EditMetadataModal({ isOpen, onClose, initialMetadata, onSave }: 
                             className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 dark:text-gray-100"
                         />
                         {errors.tempo && <p className="text-red-500 text-xs mt-1">{errors.tempo}</p>}
+                    </div>
+
+                    <div>
+                        <label htmlFor="year" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Year</label>
+                        <input
+                            id="year"
+                            type="number"
+                            value={formData.year || ''}
+                            onChange={(e) => handleChange('year', parseInt(e.target.value) || undefined)}
+                            placeholder="e.g. 1972"
+                            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 dark:text-gray-100"
+                        />
+                        {errors.year && <p className="text-red-500 text-xs mt-1">{errors.year}</p>}
                     </div>
                 </div>
 

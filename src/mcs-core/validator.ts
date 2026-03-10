@@ -9,6 +9,7 @@ export const MetadataSchema = z.object({
     key: z.string().optional(),
     tempo: z.number().optional(),
     time_signature: z.string().optional(),
+    year: z.number().int().positive().optional(),
     themes: z.array(z.string()).optional(),
     copyright: z.string().optional(),
     ccli: z.string().optional(),

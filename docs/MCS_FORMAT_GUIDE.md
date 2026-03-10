@@ -35,6 +35,7 @@
  | `time_signature` | String | e.g., "4/4", "6/8". |
  | `ccli` | String | CCLI license number. |
  | `copyright` | String | Copyright information. |
+ | `year` | Number | Year the song was written (e.g., 1772). |
  | `themes` | List | Keywords like ["Trust", "Worship"]. |
 
  **Example:**
@@ -46,6 +47,7 @@
    key: "G"
    tempo: 74
    time_signature: "3/4"
+   year: 1772
    themes:
      - "Grace"
      - "Hymn"

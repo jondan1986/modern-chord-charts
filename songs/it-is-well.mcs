@@ -1,0 +1,69 @@
+schema_version: "1.0.0"
+metadata:
+  title: "It Is Well With My Soul"
+  artist: "Horatio Spafford / Philip Bliss"
+  key: "G"
+  tempo: 80
+  time_signature: "3/4"
+  copyright: "Public Domain"
+  year: 1873
+  themes:
+    - "Peace"
+    - "Hymn"
+    - "Trust"
+
+sections:
+  - id: "v1"
+    type: "verse"
+    label: "Verse 1"
+    lines:
+      - "When [G]peace like a [G7]river at[C]tendeth my [G]way"
+      - "When [G]sorrows like [D]sea billows [G]roll"
+      - "What[G]ever my [G7]lot, Thou hast [C]taught me to [Am]say"
+      - "It is [G]well, it is [D]well with my [G]soul"
+
+  - id: "c1"
+    type: "chorus"
+    label: "Chorus"
+    lines:
+      - "It is [G]well [D]with my [G]soul"
+      - "It is [G]well, it is [D]well with my [G]soul"
+
+  - id: "v2"
+    type: "verse"
+    label: "Verse 2"
+    lines:
+      - "Though [G]Satan should [G7]buffet, though [C]trials should [G]come"
+      - "Let [G]this blest as[D]surance con[G]trol"
+      - "That [G]Christ hath re[G7]garded my [C]helpless es[Am]tate"
+      - "And hath [G]shed His own [D]blood for my [G]soul"
+
+  - id: "v3"
+    type: "verse"
+    label: "Verse 3"
+    lines:
+      - "My [G]sin — oh the [G7]bliss of this [C]glorious [G]thought"
+      - "My [G]sin, not in [D]part, but the [G]whole"
+      - "Is [G]nailed to the [G7]cross and I [C]bear it no [Am]more"
+      - "Praise the [G]Lord, praise the [D]Lord, oh my [G]soul"
+
+  - id: "v4"
+    type: "verse"
+    label: "Verse 4"
+    lines:
+      - "And [G]Lord haste the [G7]day when the [C]faith shall be [G]sight"
+      - "The [G]clouds be rolled [D]back as a [G]scroll"
+      - "The [G]trump shall re[G7]sound and the [C]Lord shall de[Am]scend"
+      - "Even [G]so it is [D]well with my [G]soul"
+
+arrangements:
+  - name: "Default"
+    order:
+      - "v1"
+      - "c1"
+      - "v2"
+      - "c1"
+      - "v3"
+      - "c1"
+      - "v4"
+      - "c1"

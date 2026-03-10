@@ -41,3 +41,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 songs/*.mcs
+!songs/amazing-grace.mcs
+!songs/it-is-well.mcs

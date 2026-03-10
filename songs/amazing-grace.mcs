@@ -1,0 +1,57 @@
+schema_version: "1.0.0"
+metadata:
+  title: "Amazing Grace"
+  artist: "John Newton"
+  key: "G"
+  tempo: 74
+  time_signature: "3/4"
+  copyright: "Public Domain"
+  year: 1772
+  themes:
+    - "Grace"
+    - "Hymn"
+
+sections:
+  - id: "v1"
+    type: "verse"
+    label: "Verse 1"
+    lines:
+      - "A[G]mazing grace, how [C]sweet the [G]sound"
+      - "That [G]saved a wretch like [D]me"
+      - "I [G]once was lost, but [C]now am [G]found"
+      - "Was [G]blind, but [D]now I [G]see"
+
+  - id: "v2"
+    type: "verse"
+    label: "Verse 2"
+    lines:
+      - "'Twas [G]grace that taught my [C]heart to [G]fear"
+      - "And [G]grace my fears re[D]lieved"
+      - "How [G]precious did that [C]grace ap[G]pear"
+      - "The [G]hour I first be[D]lieved [G]"
+
+  - id: "v3"
+    type: "verse"
+    label: "Verse 3"
+    lines:
+      - "Through [G]many dangers, [C]toils and [G]snares"
+      - "I [G]have already [D]come"
+      - "'Tis [G]grace that brought me [C]safe thus [G]far"
+      - "And [G]grace will lead me [D]home [G]"
+
+  - id: "v4"
+    type: "verse"
+    label: "Verse 4"
+    lines:
+      - "When [G]we've been there ten [C]thousand [G]years"
+      - "Bright [G]shining as the [D]sun"
+      - "We've [G]no less days to [C]sing God's [G]praise"
+      - "Than [G]when we'd first be[D]gun [G]"
+
+arrangements:
+  - name: "Default"
+    order:
+      - "v1"
+      - "v2"
+      - "v3"
+      - "v4"

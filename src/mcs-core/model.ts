@@ -23,6 +23,7 @@ export interface SongMetadata {
   key?: string;
   tempo?: number;
   time_signature?: string;
+  year?: number;
   themes?: string[];
   copyright?: string;
   ccli?: string;
