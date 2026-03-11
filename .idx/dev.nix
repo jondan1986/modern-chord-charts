@@ -1,7 +1,7 @@
 { pkgs }: {
-  channel = "stable-24.05";
+  channel = "stable-25.05";
   packages = [
-    pkgs.nodejs_20
+    pkgs.nodejs_22
     pkgs.gh
   ];
   idx.extensions = [
@@ -13,14 +13,9 @@
     previews = {
       web = {
         command = [
-          "npm"
-          "run"
-          "dev"
-          "--"
-          "--port"
-          "$PORT"
-          "--hostname"
-          "0.0.0.0"
+          "bash"
+          "-c"
+          "npm run dev -- --port $PORT --hostname 0.0.0.0 2>&1 | tee /home/user/modern-chord-charts/dev-server.log"
         ];
         manager = "web";
       };

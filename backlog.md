@@ -3,10 +3,13 @@
 ## 📋 Not Complete
 
 - [ ] **Theme Editor (Phase 2)**: Per-section-type colors (verse bg, chorus bg, etc.), border and shadow customization. Expand Theme model with `sectionStyles` map.
+- [ ] **Mobile Editor**: Revisit mobile-responsive editor layout (pane toggle) without breaking Monaco height calculation.
 
 ## ✅ Complete
 
-- [x] **Theme Editor (Core)**: Color pickers, font controls, layout toggles, 4 preset themes (Light, Dark, High Contrast, Projection), custom theme save/load via localStorage, theme dropdown in header.
+- [x] **Theme Editor (Core)**: Color pickers, font controls, layout toggles. Custom theme save/load via localStorage. Dedicated /themes page with live preview. Dark/Light site toggle kept simple in header.
+- [x] **Editor Regression Fix**: Reverted mobile pane toggle that broke Monaco editor. Restored side-by-side layout.
+- [x] **Theme System Cleanup**: Removed unusable High Contrast/Projection presets. Reverted header to simple Dark/Light toggle. Moved theme editor from modal overlay to dedicated /themes page.
 - [x] **Custom Metadata**: Dynamic key-value custom fields in Edit Metadata modal. Displayed in viewer metadata area. Data model already supported via Zod catchall.
 - [x] **PDF Export / Print Function**: Browser `window.print()` with `@media print` CSS. Print button on viewer ActionBar. Hides UI chrome, optimizes for B&W.
 - [x] **ChordPro Export**: `ChordProExporter` converts Song objects to ChordPro format. Export button on viewer ActionBar.

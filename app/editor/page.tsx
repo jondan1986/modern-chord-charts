@@ -34,9 +34,6 @@ export default function EditorPage() {
     const [isMetadataModalOpen, setIsMetadataModalOpen] = useState(false);
     const [isArrangementsModalOpen, setIsArrangementsModalOpen] = useState(false);
 
-    // Mobile pane toggle
-    const [activeMobilePane, setActiveMobilePane] = useState<'editor' | 'preview'>('editor');
-
     // Check if component mounted client-side
     const [isMounted, setIsMounted] = useState(false);
     useEffect(() => {
@@ -300,27 +297,11 @@ export default function EditorPage() {
         <div
             className="flex flex-col h-full overflow-hidden bg-white dark:bg-gray-900"
         >
-            {/* Mobile Pane Toggle */}
-            <div className="flex md:hidden border-b border-gray-300 dark:border-gray-700">
-                <button
-                    onClick={() => setActiveMobilePane('editor')}
-                    className={`flex-1 px-4 py-2 text-sm font-medium transition ${activeMobilePane === 'editor' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}
-                >
-                    Editor
-                </button>
-                <button
-                    onClick={() => setActiveMobilePane('preview')}
-                    className={`flex-1 px-4 py-2 text-sm font-medium transition ${activeMobilePane === 'preview' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}
-                >
-                    Preview
-                </button>
-            </div>
-
             {/* Main Content */}
-            <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+            <div className="flex flex-1 overflow-hidden">
                 {/* Editor Pane (Left) */}
                 <div
-                    className={`w-full md:w-1/2 flex flex-col border-r relative border-gray-400 dark:border-gray-600 min-h-[50vh] md:min-h-0 ${activeMobilePane !== 'editor' ? 'hidden md:flex' : 'flex'}`}
+                    className="w-1/2 flex flex-col border-r relative border-gray-400 dark:border-gray-600"
                 >
                     {/* Toolbar */}
                     <div
@@ -403,7 +384,7 @@ export default function EditorPage() {
 
                 {/* Preview Pane (Right) */}
                 <div
-                    className={`w-full md:w-1/2 overflow-y-auto relative bg-white dark:bg-gray-900 ${activeMobilePane !== 'preview' ? 'hidden md:block' : 'block'}`}
+                    className="w-1/2 overflow-y-auto relative bg-white dark:bg-gray-900"
                 >
                     {parsedSong ? (
                         <div className="p-8 pb-40">

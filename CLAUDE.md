@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev        # Start Next.js dev server (logs to dev-server.log)
+npm run dev        # Start Next.js dev server (IDX preview tees output to dev-server.log)
 npm run build      # Production build
 npm run lint       # ESLint (flat config, ESLint 9+)
 npm test           # Vitest in watch mode
@@ -13,6 +13,8 @@ npm run test:ci    # Vitest single run (for CI)
 ```
 
 To run a single test file: `npx vitest run src/path/to/file.test.ts`
+
+**Dev server log**: The IDX preview tees dev server output to `dev-server.log` in the project root. Read this file to check for build errors, warnings, or server status.
 
 ## Architecture
 

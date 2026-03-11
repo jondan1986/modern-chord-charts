@@ -1,4 +1,4 @@
-const CACHE = 'chord-charts-v1';
+const CACHE = 'chord-charts-v2';
 
 const APP_SHELL = [
   '/',

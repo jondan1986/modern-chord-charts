@@ -28,10 +28,11 @@ interface ThemeEditorProps {
     theme: Theme;
     onThemeChange: (theme: Theme) => void;
     onSaveCustomTheme: (theme: Theme) => void;
-    onClose: () => void;
+    onClose?: () => void;
+    inline?: boolean;
 }
 
-export default function ThemeEditor({ theme, onThemeChange, onSaveCustomTheme, onClose }: ThemeEditorProps) {
+export default function ThemeEditor({ theme, onThemeChange, onSaveCustomTheme, onClose, inline }: ThemeEditorProps) {
     const [originalTheme] = useState<Theme>(() => JSON.parse(JSON.stringify(theme)));
 
     const isDark = theme.colors.background < "#888888";
@@ -84,10 +85,14 @@ export default function ThemeEditor({ theme, onThemeChange, onSaveCustomTheme, o
         return "#000000";
     };
 
+    const containerClass = inline
+        ? "flex flex-col overflow-hidden rounded-lg border"
+        : "fixed top-0 right-0 h-full w-80 md:w-96 shadow-2xl z-[100] flex flex-col overflow-hidden no-print";
+
     return (
         <div
-            className="fixed top-0 right-0 h-full w-80 md:w-96 shadow-2xl z-[100] flex flex-col overflow-hidden no-print"
-            style={{ backgroundColor: panelBg, color: panelText, borderLeft: `1px solid ${panelBorder}` }}
+            className={containerClass}
+            style={{ backgroundColor: panelBg, color: panelText, borderColor: inline ? panelBorder : undefined, borderLeft: inline ? undefined : `1px solid ${panelBorder}` }}
         >
             {/* Header */}
             <div
@@ -95,15 +100,17 @@ export default function ThemeEditor({ theme, onThemeChange, onSaveCustomTheme, o
                 style={{ borderColor: panelBorder }}
             >
                 <h2 className="text-lg font-bold">Theme Editor</h2>
-                <button
-                    onClick={onClose}
-                    className="p-1 rounded hover:opacity-70 transition-opacity"
-                    title="Close"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                </button>
+                {onClose && (
+                    <button
+                        onClick={onClose}
+                        className="p-1 rounded hover:opacity-70 transition-opacity"
+                        title="Close"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                )}
             </div>
 
             {/* Scrollable Body */}

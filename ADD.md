@@ -10,6 +10,7 @@ This project aims to define a next-generation, open standard for music chord cha
 *   **Interactive:** Enable "play-along" features (autoscroll, transpose, audio sync).
 *   **Local-First & Private:** The application must work 100% offline. No account or internet connection required to create, edit, or play songs.
 *   **Open Standard:** Design the specification to be open, extensible, and free for the community.
+*   **Deployable as a Docker container on a campus local network for local accessibility and portability.
 
 ## 3. Research & Analysis: Existing Standards
 **Existing standards** have been the de-facto choice for decades.
