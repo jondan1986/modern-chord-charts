@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Modal } from '@/src/components/ui/Modal';
+import { ChordEnhanceModal } from '@/src/components/pco/ChordEnhanceModal';
 import {
   fetchServiceTypes,
   fetchPlans,
@@ -45,6 +46,7 @@ export function PCOImportModal({ isOpen, onClose, onImported, onOpenSetlist }: P
 
   // Step 5
   const [results, setResults] = useState<ImportResult | null>(null);
+  const [showEnhance, setShowEnhance] = useState(false);
 
   const reset = useCallback(() => {
     setStep('service_type');
@@ -59,6 +61,7 @@ export function PCOImportModal({ isOpen, onClose, onImported, onOpenSetlist }: P
     setSelectedItems(new Set());
     setCreateSetlist(true);
     setResults(null);
+    setShowEnhance(false);
   }, []);
 
   useEffect(() => {
@@ -373,6 +376,14 @@ export function PCOImportModal({ isOpen, onClose, onImported, onOpenSetlist }: P
               </p>
             )}
             <div className="flex justify-end gap-2 pt-2">
+              {results.songs.some(s => s.status === 'lyrics_only' || s.status === 'empty') && (
+                <button
+                  onClick={() => setShowEnhance(true)}
+                  className="px-4 py-2 text-sm font-medium rounded-md border border-yellow-400 dark:border-yellow-600 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition"
+                >
+                  Enhance with Chords
+                </button>
+              )}
               {results.setlistId && onOpenSetlist && (
                 <button
                   onClick={() => {
@@ -391,6 +402,14 @@ export function PCOImportModal({ isOpen, onClose, onImported, onOpenSetlist }: P
                 Done
               </button>
             </div>
+
+            {/* Chord Enhancement Modal */}
+            <ChordEnhanceModal
+              isOpen={showEnhance}
+              onClose={() => setShowEnhance(false)}
+              songs={results.songs.filter(s => s.status === 'lyrics_only' || s.status === 'empty')}
+              onEnhanced={onImported}
+            />
           </>
         )}
       </div>

@@ -9,8 +9,12 @@ import { SongList } from "@/src/components/library/SongList";
 import { SetlistList } from "@/src/components/library/SetlistList";
 import { PCOImportModal } from "@/src/components/pco/PCOImportModal";
 import { PCOSettingsPanel } from "@/src/components/pco/PCOSettingsPanel";
+import { PasteImportModal } from "@/src/components/library/PasteImportModal";
+import { PraiseChartsSearchModal } from "@/src/components/praisecharts/PraiseChartsSearchModal";
+import { PraiseChartsSettingsPanel } from "@/src/components/praisecharts/PraiseChartsSettingsPanel";
 import { Modal } from "@/src/components/ui/Modal";
 import { getPCOCredentials } from "@/src/actions/pco";
+import { getPraiseChartsCredentials } from "@/src/actions/praisecharts";
 
 export default function LibraryPage() {
     const [songs, setSongs] = useState<StoredSong[]>([]);
@@ -18,6 +22,9 @@ export default function LibraryPage() {
     const [activeTab, setActiveTab] = useState<'songs' | 'setlists'>('songs');
     const [showPCOImport, setShowPCOImport] = useState(false);
     const [showPCOSettings, setShowPCOSettings] = useState(false);
+    const [showPasteImport, setShowPasteImport] = useState(false);
+    const [showPCSearch, setShowPCSearch] = useState(false);
+    const [showPCSettings, setShowPCSettings] = useState(false);
 
     const loadSong = useAppStore((state) => state.loadSong);
     const theme = useAppStore((state) => state.theme);
@@ -150,6 +157,13 @@ export default function LibraryPage() {
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
                         </button>
+                        <button
+                            onClick={() => setShowPasteImport(true)}
+                            className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
+                            title="Paste Chord Chart"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11v6"/><path d="M9 14h6"/></svg>
+                        </button>
                         <span className="w-px h-5 bg-gray-300 dark:bg-gray-700 mx-1" />
                         <button
                             onClick={async () => {
@@ -171,6 +185,28 @@ export default function LibraryPage() {
                             title="Planning Center Settings"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        </button>
+                        <span className="w-px h-5 bg-gray-300 dark:bg-gray-700 mx-1" />
+                        <button
+                            onClick={async () => {
+                                const { configured } = await getPraiseChartsCredentials();
+                                if (configured) {
+                                    setShowPCSearch(true);
+                                } else {
+                                    setShowPCSettings(true);
+                                }
+                            }}
+                            className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
+                            title="Search PraiseCharts"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/><line x1="8" x2="14" y1="11" y2="11"/><line x1="11" x2="11" y1="8" y2="14"/></svg>
+                        </button>
+                        <button
+                            onClick={() => setShowPCSettings(true)}
+                            className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
+                            title="PraiseCharts Settings"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg>
                         </button>
                     </div>
                 </div>
@@ -219,10 +255,40 @@ export default function LibraryPage() {
                 onImported={loadLibrary}
                 onOpenSetlist={(id) => router.push(`/setlist/${id}`)}
             />
+            <PasteImportModal
+                isOpen={showPasteImport}
+                onClose={() => setShowPasteImport(false)}
+                onImport={async (yaml) => {
+                    try {
+                        const id = await songStorage.saveSong(yaml);
+                        await loadSong(id);
+                        router.push("/editor");
+                    } catch (err) {
+                        console.error(err);
+                        alert("Failed to save imported song.");
+                    }
+                }}
+            />
             <Modal isOpen={showPCOSettings} onClose={() => setShowPCOSettings(false)} title="Planning Center Settings">
                 <PCOSettingsPanel onConnected={() => {
                     setShowPCOSettings(false);
                     setShowPCOImport(true);
+                }} />
+            </Modal>
+
+            {/* PraiseCharts Modals */}
+            <PraiseChartsSearchModal
+                isOpen={showPCSearch}
+                onClose={() => setShowPCSearch(false)}
+                onImported={async (localId) => {
+                    await loadSong(localId);
+                    router.push("/editor");
+                }}
+            />
+            <Modal isOpen={showPCSettings} onClose={() => setShowPCSettings(false)} title="PraiseCharts Settings">
+                <PraiseChartsSettingsPanel onConnected={() => {
+                    setShowPCSettings(false);
+                    setShowPCSearch(true);
                 }} />
             </Modal>
         </div>

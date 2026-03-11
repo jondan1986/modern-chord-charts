@@ -83,6 +83,7 @@ export interface ImportSongResult {
   localId: string;
   status: 'imported' | 'lyrics_only' | 'empty' | 'error';
   error?: string;
+  ccli_number?: number | null;
 }
 
 export interface ImportResult {

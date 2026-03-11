@@ -138,7 +138,7 @@ async function convertAndSaveSong(
     const localId = await saveSongFile(yaml);
 
     const status = format === 'empty' ? 'empty' : format === 'lyrics_only' ? 'lyrics_only' : 'imported';
-    return { title: song.title, localId, status };
+    return { title: song.title, localId, status, ccli_number: song.ccli_number };
   } catch (err: any) {
     return { title: song.title, localId: '', status: 'error', error: err.message };
   }
