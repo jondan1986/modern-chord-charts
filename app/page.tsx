@@ -7,11 +7,17 @@ import { useAppStore } from "@/src/state/store";
 import { useRouter } from "next/navigation";
 import { SongList } from "@/src/components/library/SongList";
 import { SetlistList } from "@/src/components/library/SetlistList";
+import { PCOImportModal } from "@/src/components/pco/PCOImportModal";
+import { PCOSettingsPanel } from "@/src/components/pco/PCOSettingsPanel";
+import { Modal } from "@/src/components/ui/Modal";
+import { getPCOCredentials } from "@/src/actions/pco";
 
 export default function LibraryPage() {
     const [songs, setSongs] = useState<StoredSong[]>([]);
     const [setlists, setSetlists] = useState<StoredSetlist[]>([]);
     const [activeTab, setActiveTab] = useState<'songs' | 'setlists'>('songs');
+    const [showPCOImport, setShowPCOImport] = useState(false);
+    const [showPCOSettings, setShowPCOSettings] = useState(false);
 
     const loadSong = useAppStore((state) => state.loadSong);
     const theme = useAppStore((state) => state.theme);
@@ -144,6 +150,28 @@ export default function LibraryPage() {
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
                         </button>
+                        <span className="w-px h-5 bg-gray-300 dark:bg-gray-700 mx-1" />
+                        <button
+                            onClick={async () => {
+                                const { configured } = await getPCOCredentials();
+                                if (configured) {
+                                    setShowPCOImport(true);
+                                } else {
+                                    setShowPCOSettings(true);
+                                }
+                            }}
+                            className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
+                            title="Import from Planning Center"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/><path d="M4 4h16" strokeDasharray="2 2"/></svg>
+                        </button>
+                        <button
+                            onClick={() => setShowPCOSettings(true)}
+                            className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
+                            title="Planning Center Settings"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        </button>
                     </div>
                 </div>
 
@@ -183,6 +211,20 @@ export default function LibraryPage() {
                     onCreate={handleCreateSetlist}
                 />
             )}
+
+            {/* PCO Modals */}
+            <PCOImportModal
+                isOpen={showPCOImport}
+                onClose={() => setShowPCOImport(false)}
+                onImported={loadLibrary}
+                onOpenSetlist={(id) => router.push(`/setlist/${id}`)}
+            />
+            <Modal isOpen={showPCOSettings} onClose={() => setShowPCOSettings(false)} title="Planning Center Settings">
+                <PCOSettingsPanel onConnected={() => {
+                    setShowPCOSettings(false);
+                    setShowPCOImport(true);
+                }} />
+            </Modal>
         </div>
     );
 }
