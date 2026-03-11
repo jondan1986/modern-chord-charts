@@ -19,10 +19,6 @@ Built with Next.js, it runs as a lightweight Docker container on your local netw
 - **PWA** — Installable as a Progressive Web App with offline support via service worker
 - **SQLite Storage** — Songs and setlists stored in a single SQLite database file, auto-seeded from `.mcs` files on first run
 
-## Screenshots
-
-_Coming soon_
-
 ## Getting Started
 
 ### Prerequisites
