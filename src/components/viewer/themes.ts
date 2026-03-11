@@ -9,6 +9,7 @@ export const DEFAULT_THEME: Theme = {
         text_secondary: "#6b7280", // gray-500
         chord: "#2563eb", // blue-600
         section_header: "#9ca3af", // gray-400
+        section_border: "#e5e7eb", // gray-200
         highlight: "rgba(37, 99, 235, 0.1)",
     },
     typography: {
@@ -35,6 +36,7 @@ export const DARK_THEME: Theme = {
         text_secondary: "#9ca3af", // gray-400
         chord: "#facc15", // yellow-400
         section_header: "#4b5563", // gray-600
+        section_border: "#374151", // gray-700
         highlight: "rgba(250, 204, 21, 0.1)",
     },
     typography: {

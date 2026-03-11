@@ -18,7 +18,10 @@ export const SectionRenderer: React.FC<Props> = ({ section, theme }) => {
 
     // Section Header Style
     return (
-        <div className="mb-6 break-inside-avoid">
+        <div
+            className="mb-6 break-inside-avoid rounded-lg border p-4"
+            style={{ borderColor: theme.colors.section_border }}
+        >
             {/* Section Label */}
             <div
                 className={`font-bold uppercase text-sm mb-1 mt-4 ${theme.name === "Dark Mode" ? "text-gray-600" : "text-gray-400"

@@ -21,6 +21,7 @@ const COLOR_FIELDS: { key: keyof Theme["colors"]; label: string }[] = [
     { key: "text_secondary", label: "Text Secondary" },
     { key: "chord", label: "Chord" },
     { key: "section_header", label: "Section Header" },
+    { key: "section_border", label: "Section Border" },
     { key: "highlight", label: "Highlight" },
 ];
 

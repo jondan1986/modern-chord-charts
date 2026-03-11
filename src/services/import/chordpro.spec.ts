@@ -26,8 +26,8 @@ Was [Em]blind but [D]now I [G]see
         expect(result).toContain('type: "verse"');
         expect(result).toContain('- "[G]Amazing [C]Grace, how [G]sweet the sound"');
 
-        expect(result).toContain('label: "Chorus"');
-        expect(result).toContain('type: "chorus"');
+        // {c: Chorus} is a comment directive — it becomes a subtitle on the current section
+        expect(result).toContain('subtitle: "Chorus"');
     });
 
     it('handles start_of_chorus directive', () => {

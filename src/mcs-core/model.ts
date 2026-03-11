@@ -74,6 +74,7 @@ export interface Theme {
     text_secondary: string;
     chord: string;
     section_header: string;
+    section_border: string;
     highlight: string;
   };
   typography: {

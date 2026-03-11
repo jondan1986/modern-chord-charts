@@ -67,6 +67,7 @@ export const ThemeSchema = z.object({
         text_secondary: z.string(),
         chord: z.string(),
         section_header: z.string(),
+        section_border: z.string(),
         highlight: z.string(),
     }),
     typography: z.object({

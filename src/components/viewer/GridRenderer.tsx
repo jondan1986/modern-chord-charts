@@ -10,7 +10,10 @@ interface Props {
 
 export const GridRenderer: React.FC<Props> = ({ section, theme }) => {
     return (
-        <div className="mb-6 break-inside-avoid">
+        <div
+            className="mb-6 break-inside-avoid rounded-lg border p-4"
+            style={{ borderColor: theme.colors.section_border }}
+        >
             {/* Header (Same as SectionRenderer) */}
             <div
                 className={`font-bold uppercase text-sm mb-2 mt-4 ${theme.name === "Dark Mode" ? "text-gray-600" : "text-gray-400"
