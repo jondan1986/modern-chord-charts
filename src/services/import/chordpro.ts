@@ -1,3 +1,7 @@
+// Modern Chord Charts
+// Copyright (c) 2026 jondan1986
+// Licensed under AGPL-3.0-only. See LICENSE for details.
+
 export class ChordProConverter {
     static convert(chordPro: string): string {
         const lines = chordPro.split(/\r?\n/);

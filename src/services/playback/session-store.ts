@@ -1,3 +1,7 @@
+// Modern Chord Charts
+// Copyright (c) 2026 jondan1986
+// Licensed under AGPL-3.0-only. See LICENSE for details.
+
 /**
  * Server-side in-memory session store for playback sync.
  * Stores active PlaybackSessions keyed by room code.

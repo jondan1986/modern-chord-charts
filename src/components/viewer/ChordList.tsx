@@ -1,3 +1,7 @@
+// Modern Chord Charts
+// Copyright (c) 2026 jondan1986
+// Licensed under AGPL-3.0-only. See LICENSE for details.
+
 import React, { useState } from 'react';
 import { Song, Theme } from '@/mcs-core/model';
 import { ChordService, Instrument } from '@/src/services/chords/chord-db';

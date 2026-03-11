@@ -1,3 +1,7 @@
+// Modern Chord Charts
+// Copyright (c) 2026 jondan1986
+// Licensed under AGPL-3.0-only. See LICENSE for details.
+
 /**
  * Converts ASCII sharp/flat notation to Unicode musical symbols for display.
  * Only applied at render time — internal storage remains ASCII.

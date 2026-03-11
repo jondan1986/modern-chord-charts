@@ -1,3 +1,7 @@
+// Modern Chord Charts
+// Copyright (c) 2026 jondan1986
+// Licensed under AGPL-3.0-only. See LICENSE for details.
+
 import { Song, Section, Line, SectionType } from '@/mcs-core/model';
 
 const SECTION_TYPE_TO_DIRECTIVE: Record<string, { start: string; end: string }> = {

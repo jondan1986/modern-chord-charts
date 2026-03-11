@@ -1,3 +1,7 @@
+// Modern Chord Charts
+// Copyright (c) 2026 jondan1986
+// Licensed under AGPL-3.0-only. See LICENSE for details.
+
 import guitar from '@tombatossals/chords-db/lib/guitar.json';
 import ukulele from '@tombatossals/chords-db/lib/ukulele.json';
 

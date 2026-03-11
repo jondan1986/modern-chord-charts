@@ -24,3 +24,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the app.
 Songs are stored in the `songs/` directory at the project root.
+
+## License
+
+This project is licensed under the [GNU Affero General Public License v3.0](LICENSE). See the [LICENSE](LICENSE) file for details.
