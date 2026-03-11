@@ -16,6 +16,8 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV DB_PATH=/app/data/songs.db
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
 
 # Copy standalone output
 COPY --from=builder /app/.next/standalone ./
