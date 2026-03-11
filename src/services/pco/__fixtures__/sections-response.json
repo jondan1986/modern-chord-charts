@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "type": "ArrangementSection",
+      "id": "201",
+      "attributes": {
+        "label": "Verse 1",
+        "lyrics": "Be Thou my vision O Lord of my heart\n\rNaught be all else to me save that Thou art\n\rThou my best thought by day or by night\n\rWaking or sleeping Thy presence my light"
+      }
+    },
+    {
+      "type": "ArrangementSection",
+      "id": "202",
+      "attributes": {
+        "label": "Verse 2",
+        "lyrics": "Be Thou my wisdom and Thou my true Word\n\rI ever with Thee and Thou with me Lord\n\rThou my great Father and I Thy true son\n\rThou in me dwelling and I with Thee one"
+      }
+    },
+    {
+      "type": "ArrangementSection",
+      "id": "203",
+      "attributes": {
+        "label": "Verse 3",
+        "lyrics": "High King of heaven my victory won\n\rMay I reach heaven's joys O bright heaven's Sun\n\rHeart of my own heart whatever befall\n\rStill be my vision O Ruler of all"
+      }
+    }
+  ],
+  "links": {
+    "self": "https://api.planningcenteronline.com/services/v2/songs/5002/arrangements/6002/sections"
+  },
+  "meta": {
+    "total_count": 3,
+    "count": 3
+  }
+}

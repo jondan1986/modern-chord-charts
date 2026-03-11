@@ -32,6 +32,11 @@ function createDb(): Database.Database {
       song_ids   TEXT NOT NULL,
       updated_at INTEGER NOT NULL DEFAULT (unixepoch())
     );
+
+    CREATE TABLE IF NOT EXISTS pco_settings (
+      key   TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
   `);
 
   // Seed from .mcs files if DB is empty
