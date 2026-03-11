@@ -14,7 +14,7 @@ npm run test:ci    # Vitest single run (for CI)
 
 To run a single test file: `npx vitest run src/path/to/file.test.ts`
 
-**Dev server log**: The IDX preview tees dev server output to `dev-server.log` in the project root. Read this file to check for build errors, warnings, or server status.
+**Dev server**: The Firebase Studio (IDX) preview manages the dev server automatically — do NOT start `npm run dev` manually. The preview tees dev server output to `dev-server.log` in the project root. Read this file to check for build errors, warnings, or server status.
 
 ## Architecture
 

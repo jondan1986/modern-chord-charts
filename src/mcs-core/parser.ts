@@ -28,7 +28,6 @@ export class MCSParser {
     const validation = SongSchema.safeParse(rawData);
 
     if (!validation.success) {
-      console.error("Validation Error:", validation.error.format());
       // Zod v3 uses .issues typically, or .errors. Casting to avoid version conflict noise.
       const zodErr = validation.error as any;
       const firstError = zodErr.errors?.[0] || zodErr.issues?.[0];
