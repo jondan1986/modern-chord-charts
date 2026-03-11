@@ -156,7 +156,6 @@ function mergeLineChords(targetLine: string, sourceLine: string): string {
 
     // Distribute chords at word boundaries
     const words = lyrics.split(/(\s+)/);
-    const nonSpaceWords = words.filter(w => w.trim());
     let result = '';
     let chordIdx = 0;
 

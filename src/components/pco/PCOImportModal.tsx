@@ -64,14 +64,7 @@ export function PCOImportModal({ isOpen, onClose, onImported, onOpenSetlist }: P
     setShowEnhance(false);
   }, []);
 
-  useEffect(() => {
-    if (isOpen) {
-      reset();
-      loadServiceTypes();
-    }
-  }, [isOpen, reset]);
-
-  const loadServiceTypes = async () => {
+  const loadServiceTypes = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -81,7 +74,14 @@ export function PCOImportModal({ isOpen, onClose, onImported, onOpenSetlist }: P
       setError(err.message ?? 'Failed to load service types');
     }
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      reset();
+      loadServiceTypes();
+    }
+  }, [isOpen, reset, loadServiceTypes]);
 
   const loadPlans = async (serviceTypeId: string, filter: 'future' | 'past') => {
     setLoading(true);
