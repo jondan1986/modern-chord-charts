@@ -10,20 +10,23 @@ interface Props {
     song: Song;
     theme?: Theme;
     onEditMetadata?: () => void;
+    forceSingleColumn?: boolean;
 }
 
 import { transposeChord, getTargetKey, getKeyPreference } from "@/src/mcs-core/transpose";
 import { formatChordForDisplay } from "@/src/utils/chord-display";
 
-export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEditMetadata }) => {
-    const [activeArrangementIdx, setActiveArrangementIdx] = React.useState<number | null>(null);
+export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEditMetadata, forceSingleColumn }) => {
+    const hasArrangements = song.arrangements && song.arrangements.length > 0;
+    const [activeArrangementIdx, setActiveArrangementIdx] = React.useState<number | null>(hasArrangements ? 0 : null);
     const [transposeSteps, setTransposeSteps] = React.useState(0);
 
-    // Reset arrangement and transpose if song changes ID (but what if just content changes?)
+    // Reset arrangement and transpose if song changes ID
     React.useEffect(() => {
-        setActiveArrangementIdx(null);
+        const hasArr = song.arrangements && song.arrangements.length > 0;
+        setActiveArrangementIdx(hasArr ? 0 : null);
         setTransposeSteps(0);
-    }, [song.metadata.title, song.metadata.artist]);
+    }, [song.metadata.title, song.metadata.artist, song.arrangements]);
 
     // Transpose Logic
     const displayedSong = React.useMemo(() => {
@@ -160,20 +163,11 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
                         })()}
                     </div>
 
-                    {/* Arrangement Selector */}
-                    {displayedSong.arrangements && displayedSong.arrangements.length > 0 && (
+                    {/* Arrangement Selector — only shown when 2+ arrangements exist */}
+                    {displayedSong.arrangements && displayedSong.arrangements.length > 1 && (
                         <div className="no-print flex flex-col items-end gap-2">
                             <span className="text-xs font-semibold opacity-70">ARRANGEMENT</span>
                             <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
-                                <button
-                                    onClick={() => setActiveArrangementIdx(null)}
-                                    className={`px-3 py-1 text-sm rounded-md transition ${activeArrangementIdx === null
-                                        ? 'bg-white dark:bg-gray-700 shadow-sm font-medium text-blue-600 dark:text-blue-400'
-                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-                                        }`}
-                                >
-                                    Default
-                                </button>
                                 {displayedSong.arrangements.map((arr, idx) => (
                                     <button
                                         key={idx}
@@ -194,7 +188,7 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
 
             {/* Sections */}
             <div
-                className={`gap-6 ${theme.layout.two_column
+                className={`gap-6 ${theme.layout.two_column && !forceSingleColumn
                     ? "columns-1 md:columns-2"
                     : "columns-1"
                     }`}

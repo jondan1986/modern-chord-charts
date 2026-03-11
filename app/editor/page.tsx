@@ -388,7 +388,7 @@ export default function EditorPage() {
                 >
                     {parsedSong ? (
                         <div className="p-8 pb-40">
-                            <SongViewer song={parsedSong} theme={theme} />
+                            <SongViewer song={parsedSong} theme={theme} forceSingleColumn />
                         </div>
                     ) : (
                         <div className="p-10 text-gray-400 text-center">
