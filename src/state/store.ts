@@ -29,6 +29,7 @@ interface AppState {
   setTheme: (theme: Theme) => void;
   saveCustomTheme: (theme: Theme) => void;
   deleteCustomTheme: (name: string) => void;
+  hydrateFromStorage: () => void;
   setSelectedSongId: (id: string | null) => void;
   setSelectedSetlistId: (id: string | null) => void;
 
@@ -88,7 +89,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   activeSongId: undefined,
   theme: DEFAULT_THEME,
   lastSavedYaml: DEFAULT_YAML,
-  customThemes: loadCustomThemes(),
+  customThemes: [],
   activeSetlistId: null,
   activeSetlistSongs: [],
   currentSetlistIndex: -1,
@@ -128,6 +129,16 @@ export const useAppStore = create<AppState>((set, get) => ({
       newState.theme = DEFAULT_THEME;
     }
     set(newState);
+  },
+
+  hydrateFromStorage: () => {
+    if (typeof window === "undefined") return;
+    try {
+      const stored = localStorage.getItem("mcc-custom-themes");
+      if (stored) set({ customThemes: JSON.parse(stored) });
+    } catch {
+      // ignore storage errors
+    }
   },
 
   loadSong: async (id) => {

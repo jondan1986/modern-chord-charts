@@ -267,6 +267,10 @@ export default function ActionBar() {
             );
         }
 
+        if (pathname === '/playback') {
+            return null; // Playback page manages its own controls
+        }
+
         return null;
     };
 

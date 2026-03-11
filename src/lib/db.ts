@@ -62,6 +62,21 @@ function createDb(): Database.Database {
     }
   }
 
+  // Seed default setlist if setlists table is empty
+  const { count: setlistCount } = instance.prepare('SELECT COUNT(*) as count FROM setlists').get() as { count: number };
+  if (setlistCount === 0) {
+    // Find seed songs by title (IDs depend on filename casing)
+    const amazingGrace = instance.prepare("SELECT id FROM songs WHERE title LIKE '%Amazing Grace%'").get() as { id: string } | undefined;
+    const itIsWell = instance.prepare("SELECT id FROM songs WHERE title LIKE '%It Is Well%'").get() as { id: string } | undefined;
+    const seedSongIds = [amazingGrace?.id, itIsWell?.id].filter(Boolean) as string[];
+    if (seedSongIds.length > 0) {
+      instance.prepare(
+        'INSERT OR IGNORE INTO setlists (id, name, song_ids, updated_at) VALUES (?, ?, ?, ?)'
+      ).run('default-hymns', 'Public Domain Hymns', JSON.stringify(seedSongIds), Math.floor(Date.now() / 1000));
+      console.log('DB: seeded default setlist "Public Domain Hymns"');
+    }
+  }
+
   return instance;
 }
 

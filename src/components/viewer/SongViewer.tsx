@@ -11,15 +11,22 @@ interface Props {
     theme?: Theme;
     onEditMetadata?: () => void;
     forceSingleColumn?: boolean;
+    highlightedSectionIndex?: number;
+    externalTransposeSteps?: number;
 }
 
 import { transposeChord, getTargetKey, getKeyPreference } from "@/src/mcs-core/transpose";
 import { formatChordForDisplay } from "@/src/utils/chord-display";
 
-export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEditMetadata, forceSingleColumn }) => {
+export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEditMetadata, forceSingleColumn, highlightedSectionIndex, externalTransposeSteps }) => {
     const hasArrangements = song.arrangements && song.arrangements.length > 0;
     const [activeArrangementIdx, setActiveArrangementIdx] = React.useState<number | null>(hasArrangements ? 0 : null);
-    const [transposeSteps, setTransposeSteps] = React.useState(0);
+    const [internalTransposeSteps, setInternalTransposeSteps] = React.useState(0);
+    const transposeSteps = externalTransposeSteps !== undefined ? externalTransposeSteps : internalTransposeSteps;
+    const setTransposeSteps = (v: React.SetStateAction<number>) => {
+        if (externalTransposeSteps === undefined) setInternalTransposeSteps(v);
+    };
+    const sectionRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
     // Reset arrangement and transpose if song changes ID
     React.useEffect(() => {
@@ -193,11 +200,19 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
                     : "columns-1"
                     }`}
             >
-                {visibleSections.map((section) => (
-                    <div key={section.uniqueKey} className="break-inside-avoid mb-6">
-                        <SectionRenderer section={section} theme={theme} />
-                    </div>
-                ))}
+                {visibleSections.map((section, idx) => {
+                    const isHighlighted = highlightedSectionIndex !== undefined && idx === highlightedSectionIndex;
+                    return (
+                        <div
+                            key={section.uniqueKey}
+                            ref={el => { sectionRefs.current[idx] = el; }}
+                            data-section-index={idx}
+                            className={`break-inside-avoid mb-6 transition-all duration-300 ${isHighlighted ? 'border-l-4 border-l-blue-500 bg-blue-50/50 dark:bg-blue-900/20 pl-2 rounded-r-lg' : ''}`}
+                        >
+                            <SectionRenderer section={section} theme={theme} />
+                        </div>
+                    );
+                })}
             </div>
 
             {/* Chord Diagrams - use original or transposed? Transposed ideally. */}

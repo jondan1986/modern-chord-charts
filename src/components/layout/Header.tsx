@@ -10,11 +10,16 @@ export default function Header() {
     const toggleTheme = useAppStore((state) => state.toggleTheme);
     const activeYaml = useAppStore((state) => state.activeYaml);
     const lastSavedYaml = useAppStore((state) => state.lastSavedYaml);
+    const hydrateFromStorage = useAppStore((state) => state.hydrateFromStorage);
     const pathname = usePathname();
 
     const isDirty = activeYaml !== lastSavedYaml;
 
     const isActive = (path: string) => pathname === path;
+
+    useEffect(() => {
+        hydrateFromStorage();
+    }, [hydrateFromStorage]);
 
     useEffect(() => {
         if (theme.name === 'Dark Mode') {
@@ -65,6 +70,13 @@ export default function Header() {
                         className={`px-3 py-2 rounded transition-colors flex items-center gap-1 ${isActive('/themes') ? 'bg-blue-600 text-white' : 'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100'}`}
                     >
                         Themes
+                    </Link>
+
+                    <Link
+                        href="/playback"
+                        className={`px-3 py-2 rounded transition-colors flex items-center gap-1 ${isActive('/playback') ? 'bg-blue-600 text-white' : 'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100'}`}
+                    >
+                        Playback
                     </Link>
                 </nav>
             </div>
