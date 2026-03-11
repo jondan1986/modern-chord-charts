@@ -16,7 +16,6 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV DB_PATH=/app/data/songs.db
-ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 
 # Copy standalone output
@@ -32,4 +31,4 @@ RUN mkdir -p /app/data
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "HOSTNAME=0.0.0.0 node server.js"]
