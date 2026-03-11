@@ -1,0 +1,183 @@
+{
+  "data": [
+    {
+      "type": "Item",
+      "id": "1001",
+      "attributes": {
+        "item_type": "header",
+        "title": "Worship",
+        "key_name": null,
+        "sequence": 1
+      },
+      "relationships": {}
+    },
+    {
+      "type": "Item",
+      "id": "1002",
+      "attributes": {
+        "item_type": "song",
+        "title": "Amazing Grace",
+        "key_name": "G",
+        "sequence": 2
+      },
+      "relationships": {
+        "song": { "data": { "type": "Song", "id": "5001" } },
+        "arrangement": { "data": { "type": "Arrangement", "id": "6001" } }
+      }
+    },
+    {
+      "type": "Item",
+      "id": "1003",
+      "attributes": {
+        "item_type": "song",
+        "title": "Be Thou My Vision",
+        "key_name": "E",
+        "sequence": 3
+      },
+      "relationships": {
+        "song": { "data": { "type": "Song", "id": "5002" } },
+        "arrangement": { "data": { "type": "Arrangement", "id": "6002" } }
+      }
+    },
+    {
+      "type": "Item",
+      "id": "1004",
+      "attributes": {
+        "item_type": "song",
+        "title": "How Great Thou Art",
+        "key_name": "D",
+        "sequence": 4
+      },
+      "relationships": {
+        "song": { "data": { "type": "Song", "id": "5003" } },
+        "arrangement": { "data": { "type": "Arrangement", "id": "6003" } }
+      }
+    },
+    {
+      "type": "Item",
+      "id": "1005",
+      "attributes": {
+        "item_type": "item",
+        "title": "Announcements",
+        "key_name": null,
+        "sequence": 5
+      },
+      "relationships": {}
+    },
+    {
+      "type": "Item",
+      "id": "1006",
+      "attributes": {
+        "item_type": "song",
+        "title": "Empty Song",
+        "key_name": "C",
+        "sequence": 6
+      },
+      "relationships": {
+        "song": { "data": { "type": "Song", "id": "5004" } },
+        "arrangement": { "data": { "type": "Arrangement", "id": "6004" } }
+      }
+    }
+  ],
+  "included": [
+    {
+      "type": "Song",
+      "id": "5001",
+      "attributes": {
+        "title": "Amazing Grace",
+        "author": "John Newton",
+        "ccli_number": 4755360,
+        "copyright": "Public Domain",
+        "themes": "grace, salvation, redemption"
+      }
+    },
+    {
+      "type": "Song",
+      "id": "5002",
+      "attributes": {
+        "title": "Be Thou My Vision",
+        "author": "Traditional Irish",
+        "ccli_number": 30639,
+        "copyright": "Public Domain",
+        "themes": "devotion, surrender"
+      }
+    },
+    {
+      "type": "Song",
+      "id": "5003",
+      "attributes": {
+        "title": "How Great Thou Art",
+        "author": "Stuart K. Hine",
+        "ccli_number": 14181,
+        "copyright": "1949 Stuart Hine Trust",
+        "themes": "worship, awe, creation"
+      }
+    },
+    {
+      "type": "Song",
+      "id": "5004",
+      "attributes": {
+        "title": "Empty Song",
+        "author": "Unknown",
+        "ccli_number": null,
+        "copyright": null,
+        "themes": null
+      }
+    },
+    {
+      "type": "Arrangement",
+      "id": "6001",
+      "attributes": {
+        "name": "Original",
+        "chord_chart": "Verse 1\n[G]Amazing [C]Grace how [G]sweet the sound\nThat [G]saved a [Em]wretch like [D]me\n\nChorus:\n[G]I once was [C]lost but [G]now am found\nWas [Em]blind but [D]now I [G]see",
+        "chord_chart_key": "G",
+        "has_chords": true,
+        "lyrics": "Amazing Grace how sweet the sound\nThat saved a wretch like me",
+        "sequence": ["Verse 1", "Chorus"]
+      }
+    },
+    {
+      "type": "Arrangement",
+      "id": "6002",
+      "attributes": {
+        "name": "Original",
+        "chord_chart": "Verse 1\nBe Thou my vision O Lord of my heart\nNaught be all else to me save that Thou art",
+        "chord_chart_key": "E",
+        "has_chords": false,
+        "lyrics": "Be Thou my vision O Lord of my heart\nNaught be all else to me save that Thou art",
+        "sequence": ["Verse 1", "Verse 2", "Verse 3"]
+      }
+    },
+    {
+      "type": "Arrangement",
+      "id": "6003",
+      "attributes": {
+        "name": "Original",
+        "chord_chart": "Verse 1\nO Lord my God when I in awesome wonder\nConsider all the worlds Thy hands have made\n\nIMPORTED FROM SONGSELECT\nVerse 1\nO Lord my [D]God, when I in [G]awesome wonder\n[D]Consider [A]all the [D]worlds Thy hands have made",
+        "chord_chart_key": "D",
+        "has_chords": true,
+        "lyrics": "O Lord my God when I in awesome wonder",
+        "sequence": ["Verse 1", "Chorus"]
+      }
+    },
+    {
+      "type": "Arrangement",
+      "id": "6004",
+      "attributes": {
+        "name": "Original",
+        "chord_chart": null,
+        "chord_chart_key": "C",
+        "has_chords": false,
+        "lyrics": "",
+        "sequence": []
+      }
+    }
+  ],
+  "links": {
+    "self": "https://api.planningcenteronline.com/services/v2/service_types/1/plans/100/items?include=song,arrangement,key"
+  },
+  "meta": {
+    "total_count": 6,
+    "count": 6
+  }
+}

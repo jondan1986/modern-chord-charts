@@ -13,6 +13,8 @@ import Editor from "@monaco-editor/react";
 import { InsertSectionModal } from "@/src/components/editor/InsertSectionModal";
 import { EditMetadataModal } from "@/src/components/modals/EditMetadataModal";
 import { ManageArrangementsModal } from "@/src/components/editor/ManageArrangementsModal";
+import { PraiseChartsSearchModal } from "@/src/components/praisecharts/PraiseChartsSearchModal";
+import { getPraiseChartsCredentials } from "@/src/actions/praisecharts";
 import { parseDocument } from "yaml";
 
 export default function EditorPage() {
@@ -33,6 +35,7 @@ export default function EditorPage() {
     const [selectedRangeForModal, setSelectedRangeForModal] = useState<any>(null);
     const [isMetadataModalOpen, setIsMetadataModalOpen] = useState(false);
     const [isArrangementsModalOpen, setIsArrangementsModalOpen] = useState(false);
+    const [isFindChordsOpen, setIsFindChordsOpen] = useState(false);
 
     // Check if component mounted client-side
     const [isMounted, setIsMounted] = useState(false);
@@ -327,6 +330,19 @@ export default function EditorPage() {
                         >
                             Arrangements
                         </button>
+                        <button
+                            onClick={async () => {
+                                const { configured } = await getPraiseChartsCredentials();
+                                if (configured) {
+                                    setIsFindChordsOpen(true);
+                                } else {
+                                    alert('Configure PraiseCharts credentials first in Library > PraiseCharts Settings.');
+                                }
+                            }}
+                            className="px-2 py-1 text-xs border rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition text-gray-700 dark:text-gray-300"
+                        >
+                            Find Chords
+                        </button>
                     </div>
 
                     {error && (
@@ -419,6 +435,21 @@ export default function EditorPage() {
                 sections={parsedSong?.sections || []}
                 existingArrangements={parsedSong?.arrangements || []}
                 onSave={handleArrangementsSave}
-            />        </div>
+            />
+
+            <PraiseChartsSearchModal
+                isOpen={isFindChordsOpen}
+                onClose={() => setIsFindChordsOpen(false)}
+                onImported={async (localId) => {
+                    const { songStorage } = await import("@/src/services/storage");
+                    const song = await songStorage.getSong(localId);
+                    if (song) {
+                        setActiveYaml(song.yaml);
+                    }
+                }}
+                initialQuery={parsedSong?.metadata?.title || ''}
+                initialCCLI={parsedSong?.metadata?.ccli?.toString() || ''}
+            />
+        </div>
     );
 }
