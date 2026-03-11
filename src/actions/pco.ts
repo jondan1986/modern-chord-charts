@@ -20,6 +20,10 @@ import type {
   ExportResult,
 } from '@/src/services/pco/types';
 
+function ensurePCOSettingsTable(): void {
+  db.exec('CREATE TABLE IF NOT EXISTS pco_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL)');
+}
+
 function getCredentials(): { appId: string; secret: string } | null {
   const envAppId = process.env.PCO_APP_ID;
   const envSecret = process.env.PCO_SECRET;
@@ -27,10 +31,15 @@ function getCredentials(): { appId: string; secret: string } | null {
     return { appId: envAppId, secret: envSecret };
   }
 
-  const dbAppId = (db.prepare("SELECT value FROM pco_settings WHERE key = 'pco_app_id'").get() as { value: string } | undefined)?.value;
-  const dbSecret = (db.prepare("SELECT value FROM pco_settings WHERE key = 'pco_secret'").get() as { value: string } | undefined)?.value;
-  if (dbAppId && dbSecret) {
-    return { appId: dbAppId, secret: dbSecret };
+  try {
+    ensurePCOSettingsTable();
+    const dbAppId = (db.prepare("SELECT value FROM pco_settings WHERE key = 'pco_app_id'").get() as { value: string } | undefined)?.value;
+    const dbSecret = (db.prepare("SELECT value FROM pco_settings WHERE key = 'pco_secret'").get() as { value: string } | undefined)?.value;
+    if (dbAppId && dbSecret) {
+      return { appId: dbAppId, secret: dbSecret };
+    }
+  } catch {
+    // Table doesn't exist yet — that's fine, no DB credentials
   }
 
   return null;
@@ -47,6 +56,7 @@ export async function getPCOCredentials(): Promise<{ configured: boolean }> {
 }
 
 export async function savePCOCredentials(appId: string, secret: string): Promise<void> {
+  ensurePCOSettingsTable();
   db.prepare(
     "INSERT OR REPLACE INTO pco_settings (key, value) VALUES ('pco_app_id', ?)"
   ).run(appId);

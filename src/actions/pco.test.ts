@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock db before importing the module under test
 vi.mock('@/src/lib/db', () => ({
-  default: { prepare: vi.fn() },
+  default: { prepare: vi.fn(), exec: vi.fn() },
 }));
 
 // Mock file-storage actions
