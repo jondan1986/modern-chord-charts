@@ -49,16 +49,33 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Docker Deployment (LAN)
 
-The recommended way to run Modern Chord Charts on your local network is with Docker. The container bundles everything — Node.js, the built app, and SQLite — so there are no external dependencies.
+The recommended way to run Modern Chord Charts on your local network is with Docker. The pre-built image is hosted on GitHub Container Registry (GHCR) — no need to clone the repo or build anything. Docker bundles everything (Node.js, the app, and SQLite) so there are no external dependencies.
 
-### Option 1: Docker Compose (recommended)
+### Quick Start
 
-Create a `docker-compose.yml` (or use the one included in the repo):
+Pull and run the container in one command:
+
+```bash
+docker run -d \
+  --name chord-charts \
+  -p 3000:3000 \
+  -v chord_data:/app/data \
+  --restart unless-stopped \
+  ghcr.io/jondan1986/modern-chord-charts:latest
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser. That's it.
+
+> **Important:** The `-p 3000:3000` flag is required — it maps the container's port to your machine. Without it, the app won't be accessible.
+
+### Using Docker Compose
+
+For easier management, create a file called `docker-compose.yml` anywhere on your machine:
 
 ```yaml
 services:
   chord-charts:
-    build: .
+    image: ghcr.io/jondan1986/modern-chord-charts:latest
     ports:
       - "3000:3000"
     volumes:
@@ -69,65 +86,79 @@ volumes:
   chord_data:
 ```
 
-Then run:
+Then run from the same directory:
 
 ```bash
 docker compose up -d
 ```
 
-The app will be available at `http://<your-machine-ip>:3000` from any device on your LAN.
+> **Note:** `docker compose` looks for `docker-compose.yml` in your current directory. You can run from a different directory with `docker compose -f /path/to/docker-compose.yml up -d`.
 
-### Option 2: Docker CLI
+To update to a new version:
 
 ```bash
-# Build the image
-docker build -t modern-chord-charts .
-
-# Run the container
-docker run -d \
-  --name chord-charts \
-  -p 3000:3000 \
-  -v chord_data:/app/data \
-  --restart unless-stopped \
-  modern-chord-charts
+docker compose pull
+docker compose down && docker compose up -d
 ```
 
-### Accessing from Other Devices
+### Accessing from Other Devices on Your Network
 
-1. Find your host machine's local IP address:
+Once the container is running, any device on your local network can access the app:
+
+1. Find the host machine's local IP address:
    ```bash
    # Linux / macOS
-   hostname -I        # or: ip addr show | grep "inet "
+   hostname -I
 
-   # Windows
+   # Windows (run in PowerShell or Command Prompt)
    ipconfig
    ```
-2. Open `http://<host-ip>:3000` from any phone, tablet, or laptop on the same network.
-3. On mobile devices, use the browser's "Add to Home Screen" option to install it as a PWA for a full-screen, app-like experience.
+   Look for an address like `192.168.x.x` or `10.0.x.x`.
+
+2. From any phone, tablet, or laptop on the same Wi-Fi/network, open:
+   ```
+   http://<host-ip>:3000
+   ```
+   For example: `http://192.168.1.50:3000`
+
+3. On mobile devices, tap the browser's **"Add to Home Screen"** option to install it as a PWA for a full-screen, app-like experience.
+
+### Customizing the Port
+
+To run on a different port (e.g., 8080), change the first number in the port mapping:
+
+```bash
+docker run -d -p 8080:3000 -v chord_data:/app/data ghcr.io/jondan1986/modern-chord-charts:latest
+```
+
+Then access the app at `http://localhost:8080`.
 
 ### Data Persistence
 
-Song and setlist data is stored in a SQLite database at `/app/data/songs.db` inside the container. The `chord_data` volume ensures your data survives container restarts and upgrades.
+Song and setlist data is stored in a SQLite database inside the container. The `-v chord_data:/app/data` flag creates a Docker volume that persists your data across container restarts, stops, and upgrades.
 
-To back up your data:
+**Back up your data:**
 
 ```bash
 docker cp chord-charts:/app/data/songs.db ./songs-backup.db
 ```
 
-To restore from a backup:
+**Restore from a backup:**
 
 ```bash
 docker cp ./songs-backup.db chord-charts:/app/data/songs.db
 docker restart chord-charts
 ```
 
-### Customizing the Port
+### Building from Source
 
-To run on a different port (e.g., 8080):
+If you prefer to build the image yourself instead of pulling from GHCR:
 
 ```bash
-docker run -d -p 8080:3000 -v chord_data:/app/data modern-chord-charts
+git clone https://github.com/jondan1986/modern-chord-charts.git
+cd modern-chord-charts
+docker build -t modern-chord-charts .
+docker run -d --name chord-charts -p 3000:3000 -v chord_data:/app/data modern-chord-charts
 ```
 
 ## Project Structure
