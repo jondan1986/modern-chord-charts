@@ -161,6 +161,82 @@ docker build -t modern-chord-charts .
 docker run -d --name chord-charts -p 3000:3000 -v chord_data:/app/data modern-chord-charts
 ```
 
+### Raspberry Pi Deployment
+
+The Docker image supports both x86_64 and ARM64 architectures, so the same image works on a Raspberry Pi with no extra steps.
+
+**Supported models:** Raspberry Pi 3B+, 4, 5, Zero 2 W (any ARM64-capable Pi). **64-bit Raspberry Pi OS (Bookworm or later) is required** — 32-bit is not supported.
+
+#### Installing Docker on the Pi
+
+```bash
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+```
+
+Log out and back in for the group change to take effect.
+
+#### Quick Start
+
+Run the same command as on x86 — Docker automatically pulls the ARM64 variant:
+
+```bash
+docker run -d \
+  --name chord-charts \
+  -p 3000:3000 \
+  -v chord_data:/app/data \
+  --restart unless-stopped \
+  ghcr.io/jondan1986/modern-chord-charts:latest
+```
+
+#### Docker Compose on Pi
+
+Create a `docker-compose.yml` file:
+
+```yaml
+services:
+  chord-charts:
+    image: ghcr.io/jondan1986/modern-chord-charts:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - chord_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  chord_data:
+```
+
+```bash
+docker compose up -d
+```
+
+#### Auto-Start on Boot
+
+The `--restart unless-stopped` flag ensures the container restarts automatically. Just make sure the Docker daemon starts on boot:
+
+```bash
+sudo systemctl enable docker
+```
+
+#### Accessing from the Network
+
+Find the Pi's IP address:
+
+```bash
+hostname -I
+```
+
+Then open `http://<pi-ip>:3000` from any device on the same network.
+
+> **Headless setup:** The Pi doesn't need a monitor or keyboard. Run it headless and access the app from your phone, tablet, or laptop over the network.
+
+#### Performance Notes
+
+- **Pi 4 (4GB+) or Pi 5** — Recommended. Runs smoothly.
+- **Pi 3B+ / Zero 2 W** — Works, but expect slower page loads.
+- First startup takes a few extra seconds while the database is seeded with the included sample songs.
+
 ## Project Structure
 
 ```
