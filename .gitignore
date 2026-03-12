@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# lighthouse reports
+lighthouse-report.*
+
 # debug
 dev-server.log
 npm-debug.log*
