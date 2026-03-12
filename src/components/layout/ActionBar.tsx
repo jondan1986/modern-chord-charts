@@ -6,17 +6,20 @@
 
 import { useAppStore } from "@/src/state/store";
 import { usePathname, useRouter } from "next/navigation";
-import { songStorage } from "@/src/services/storage";
 import Link from "next/link";
-import { useRef } from "react";
 import { MCSParser } from "@/src/mcs-core/parser";
 import { ChordProExporter } from "@/src/services/export/chordpro";
+import { songStorage } from "@/src/services/storage";
+import {
+    Plus, Download, Upload, CloudDownload, Search, Music,
+    Eye, Pencil, FileDown, FileOutput, Trash2,
+    Printer, Save, X,
+} from "lucide-react";
 
 export default function ActionBar() {
     const theme = useAppStore((state) => state.theme);
     const resetSong = useAppStore((state) => state.resetSong);
     const saveCurrentSong = useAppStore((state) => state.saveCurrentSong);
-    const activeSongId = useAppStore((state) => state.activeSongId);
     const activeYaml = useAppStore((state) => state.activeYaml);
     const lastSavedYaml = useAppStore((state) => state.lastSavedYaml);
     const loadSong = useAppStore((state) => state.loadSong);
@@ -26,9 +29,14 @@ export default function ActionBar() {
     const setSelectedSongId = useAppStore((state) => state.setSelectedSongId);
     const setSelectedSetlistId = useAppStore((state) => state.setSelectedSetlistId);
 
+    const setShowImportModal = useAppStore((state) => state.setShowImportModal);
+    const setShowExportModal = useAppStore((state) => state.setShowExportModal);
+    const setShowPlanningCenterModal = useAppStore((state) => state.setShowPlanningCenterModal);
+    const setShowPraiseChartsModal = useAppStore((state) => state.setShowPraiseChartsModal);
+    const setShowSongSelectModal = useAppStore((state) => state.setShowSongSelectModal);
+
     const router = useRouter();
     const pathname = usePathname();
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const isDirty = activeYaml !== lastSavedYaml;
 
@@ -55,48 +63,6 @@ export default function ActionBar() {
 
     const handleSave = async () => {
         await saveCurrentSong();
-    };
-
-    const triggerImport = () => {
-        fileInputRef.current?.click();
-    };
-
-    const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = async (ev) => {
-            const content = ev.target?.result as string;
-            try {
-                // Basic detection: JSON vs YAML
-                if (content.trim().startsWith('{') || content.trim().startsWith('[')) {
-                    await songStorage.importLibrary(content);
-                    alert("Library Imported Successfully!");
-                } else {
-                    // Assume single YAML file
-                    await songStorage.saveSong(content);
-                    alert("Song Imported Successfully!");
-                }
-                window.location.reload();
-            } catch (err) {
-                alert("Failed to import: " + err);
-            }
-        };
-        reader.readAsText(file);
-        // Reset input
-        if (fileInputRef.current) fileInputRef.current.value = '';
-    };
-
-    const handleExportLibrary = async () => {
-        const json = await songStorage.exportLibrary();
-        const blob = new Blob([json], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `mcs_library_backup_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
     };
 
     // --- Selection-based handlers for library page ---
@@ -166,12 +132,13 @@ export default function ActionBar() {
 
     const handleSelectedOpenSetlist = () => {
         if (selectedSetlistId) {
+            const id = selectedSetlistId;
             setSelectedSetlistId(null);
-            router.push(`/setlist/${selectedSetlistId}`);
+            router.push(`/setlist/${id}`);
         }
     };
 
-    const btnBase = "flex items-center gap-2 px-4 py-2 rounded transition shadow-sm font-medium text-sm";
+    const btnBase = "flex items-center gap-1.5 px-3 py-2 rounded transition shadow-sm font-medium text-sm";
     const btnGray = `${btnBase} bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600`;
     const btnGreen = `${btnBase} bg-green-600 text-white hover:bg-green-500`;
     const btnBlue = `${btnBase} bg-blue-600 text-white hover:bg-blue-500`;
@@ -183,16 +150,16 @@ export default function ActionBar() {
             return (
                 <>
                     <button onClick={() => window.print()} className={btnGray}>
-                        Print
+                        <Printer size={16} /> Print
                     </button>
                     <button onClick={handleExportChordPro} className={btnGray}>
-                        ChordPro
+                        <FileOutput size={16} /> ChordPro
                     </button>
                     <Link href="/editor" className={btnBlue}>
-                        Edit Song
+                        <Pencil size={16} /> Edit Song
                     </Link>
                     <button onClick={handleNewSong} className={btnGreen}>
-                        New Song
+                        <Plus size={16} /> New Song
                     </button>
                 </>
             );
@@ -204,19 +171,19 @@ export default function ActionBar() {
                 return (
                     <>
                         <button onClick={handleSelectedOpen} className={btnBlue}>
-                            Open
+                            <Eye size={16} /> Open
                         </button>
                         <button onClick={handleSelectedEdit} className={btnGray}>
-                            Edit
+                            <Pencil size={16} /> Edit
                         </button>
                         <button onClick={handleSelectedExportMCS} className={btnGray}>
-                            Export MCS
+                            <FileDown size={16} /> Export MCS
                         </button>
                         <button onClick={handleSelectedExportChordPro} className={btnGray}>
-                            Export ChordPro
+                            <FileOutput size={16} /> Export ChordPro
                         </button>
                         <button onClick={handleSelectedDelete} className={btnRed}>
-                            Delete
+                            <Trash2 size={16} /> Delete
                         </button>
                     </>
                 );
@@ -226,27 +193,35 @@ export default function ActionBar() {
                 return (
                     <>
                         <button onClick={handleSelectedOpenSetlist} className={btnBlue}>
-                            Open
+                            <Eye size={16} /> Open
                         </button>
                         <button onClick={handleSelectedDelete} className={btnRed}>
-                            Delete
+                            <Trash2 size={16} /> Delete
                         </button>
                     </>
                 );
             }
 
-            // Default: nothing selected
+            // Default: nothing selected — 6 consolidated buttons
             return (
                 <>
-                    <input type="file" ref={fileInputRef} className="hidden" accept=".json,.mcs,.yaml,.yml" onChange={handleImport} />
-                    <button onClick={handleExportLibrary} className={btnGray}>
-                        Export Library
-                    </button>
-                    <button onClick={triggerImport} className={btnGray}>
-                        Import
-                    </button>
                     <button onClick={handleNewSong} className={btnGreen}>
-                        New Song
+                        <Plus size={16} /> New Song
+                    </button>
+                    <button onClick={() => setShowImportModal(true)} className={btnGray}>
+                        <Upload size={16} /> Import
+                    </button>
+                    <button onClick={() => setShowExportModal(true)} className={btnGray}>
+                        <Download size={16} /> Export
+                    </button>
+                    <button onClick={() => setShowPlanningCenterModal(true)} className={btnGray}>
+                        <CloudDownload size={16} /> Planning Center
+                    </button>
+                    <button onClick={() => setShowPraiseChartsModal(true)} className={btnGray}>
+                        <Search size={16} /> PraiseCharts
+                    </button>
+                    <button onClick={() => setShowSongSelectModal(true)} className={btnGray}>
+                        <Music size={16} /> SongSelect
                     </button>
                 </>
             );
@@ -259,20 +234,20 @@ export default function ActionBar() {
                         onClick={handleSave}
                         className={`${btnBase} ${isDirty ? 'bg-amber-500 hover:bg-amber-400 text-white' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
                     >
-                        {isDirty ? "Save (Unsaved)" : "Save"}
+                        <Save size={16} /> {isDirty ? "Save (Unsaved)" : "Save"}
                     </button>
                     <button onClick={handleNewSong} className={btnGreen}>
-                        New
+                        <Plus size={16} /> New
                     </button>
                     <Link href="/" className={btnGray}>
-                        Cancel
+                        <X size={16} /> Cancel
                     </Link>
                 </>
             );
         }
 
         if (pathname === '/playback') {
-            return null; // Playback page manages its own controls
+            return null;
         }
 
         return null;

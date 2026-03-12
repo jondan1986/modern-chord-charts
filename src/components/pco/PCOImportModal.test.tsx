@@ -232,7 +232,7 @@ describe('PCOImportModal', () => {
 
     // Results step
     await waitFor(() => {
-      expect(screen.getByText('Import Complete')).toBeDefined();
+      expect(screen.getByText('Import from Planning Center')).toBeDefined();
     });
     expect(screen.getByText('Amazing Grace')).toBeDefined();
     expect(screen.getByText('Be Thou My Vision')).toBeDefined();
