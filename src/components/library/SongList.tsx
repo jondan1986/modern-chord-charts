@@ -31,7 +31,7 @@ export const SongList: React.FC<Props> = ({ songs, theme, selectedId, onSelect, 
                     onDoubleClick={() => onOpen(song.id)}
                 >
                     <div className="flex-1">
-                        <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">{song.title}</h3>
+                        <h2 className="font-bold text-lg text-gray-900 dark:text-gray-100">{song.title}</h2>
                         <div className="text-gray-600 dark:text-gray-400">{song.artist}</div>
                         <div className="text-xs mt-1 text-gray-400">
                             Last Updated: {new Date(song.updatedAt).toLocaleDateString()}

@@ -40,7 +40,7 @@ export const SetlistList: React.FC<Props> = ({ setlists, theme, selectedId, onSe
                             onDoubleClick={() => onOpen(setlist.id)}
                         >
                             <div className="flex-1">
-                                <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">{setlist.title}</h3>
+                                <h2 className="font-bold text-lg text-gray-900 dark:text-gray-100">{setlist.title}</h2>
                                 <div className="text-xs mt-1 text-gray-400">
                                     {setlist.songs.length} song{setlist.songs.length !== 1 ? 's' : ''} • Last Updated: {new Date(setlist.updatedAt).toLocaleDateString()}
                                 </div>

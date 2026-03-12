@@ -13,21 +13,28 @@ Run the full quality pipeline, then commit and merge to main. Execute each step 
 
 Run `npm audit fix` to resolve known vulnerabilities. If it fails, report the output but continue — audit issues should not block the pipeline.
 
-## Step 2: Run Tests
+## Step 2: ESLint
+
+Run `npm run lint` to check for linting errors.
+
+- If lint **passes**, proceed to Step 3.
+- If lint **fails**, analyze the error output, read the affected source files, fix the issues, and re-run `npm run lint`. You may attempt up to **2 remediation cycles**. If lint still fails after 2 attempts, **stop and report the failures to the user**.
+
+## Step 3: Run Tests
 
 Run `npm run test:ci` to execute all tests.
 
-- If tests **pass**, proceed to Step 3.
+- If tests **pass**, proceed to Step 4.
 - If tests **fail**, analyze the error output, read the failing test files and source files, fix the issue, and re-run `npm run test:ci`. You may attempt up to **2 remediation cycles**. If tests still fail after 2 attempts, **stop and report the failures to the user**.
 
-## Step 3: Production Build
+## Step 4: Production Build
 
 Run `npm run build`.
 
-- If the build **succeeds**, proceed to Step 4.
+- If the build **succeeds**, proceed to Step 5.
 - If the build **fails**, analyze the error output, read the relevant source files, fix the issue, and re-run `npm run build`. You may attempt up to **2 remediation cycles**. If the build still fails after 2 attempts, **stop and report the errors to the user**.
 
-## Step 4: Commit
+## Step 5: Commit
 
 1. Run `git status` (never use `-uall`) and `git diff` to understand all staged and unstaged changes.
 2. Run `git log --oneline -10` to review the recent commit message style.
@@ -39,7 +46,7 @@ Run `npm run build`.
 5. Create the commit using a HEREDOC for the message.
 6. Run `git status` to verify the commit succeeded.
 
-## Step 5: Merge to Main
+## Step 6: Merge to Main
 
 1. Run `git branch --show-current` to check the current branch.
 2. If already on `main`, skip this step — the commit is already on main.
@@ -52,6 +59,7 @@ Run `npm run build`.
 
 Summarize what happened:
 - Audit result
+- Lint result (pass/fail, any fixes applied)
 - Test result (pass/fail, any fixes applied)
 - Build result (pass/fail, any fixes applied)
 - Commit hash and message
