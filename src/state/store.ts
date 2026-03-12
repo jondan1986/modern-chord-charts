@@ -24,6 +24,15 @@ interface AppState {
   selectedSongId: string | null;
   selectedSetlistId: string | null;
 
+  // Library Modal Triggers
+  showImportModal: boolean;
+  showExportModal: boolean;
+  showPlanningCenterModal: boolean;
+  showPlanningCenterDefaultTab: string | undefined;
+  showPraiseChartsModal: boolean;
+  showPraiseChartsDefaultTab: string | undefined;
+  showSongSelectModal: boolean;
+
   setActiveYaml: (yaml: string) => void;
   loadSong: (id: string) => Promise<void>;
   saveCurrentSong: () => Promise<void>;
@@ -35,6 +44,11 @@ interface AppState {
   hydrateFromStorage: () => void;
   setSelectedSongId: (id: string | null) => void;
   setSelectedSetlistId: (id: string | null) => void;
+  setShowImportModal: (show: boolean) => void;
+  setShowExportModal: (show: boolean) => void;
+  setShowPlanningCenterModal: (show: boolean, defaultTab?: string) => void;
+  setShowPraiseChartsModal: (show: boolean, defaultTab?: string) => void;
+  setShowSongSelectModal: (show: boolean) => void;
 
   // Setlist Actions
   startSetlist: (id: string, songIds: string[]) => Promise<void>;
@@ -98,11 +112,23 @@ export const useAppStore = create<AppState>((set, get) => ({
   currentSetlistIndex: -1,
   selectedSongId: null,
   selectedSetlistId: null,
+  showImportModal: false,
+  showExportModal: false,
+  showPlanningCenterModal: false,
+  showPlanningCenterDefaultTab: undefined,
+  showPraiseChartsModal: false,
+  showPraiseChartsDefaultTab: undefined,
+  showSongSelectModal: false,
 
   setActiveYaml: (yaml) => set({ activeYaml: yaml }),
 
   setSelectedSongId: (id) => set({ selectedSongId: id, selectedSetlistId: null }),
   setSelectedSetlistId: (id) => set({ selectedSetlistId: id, selectedSongId: null }),
+  setShowImportModal: (show) => set({ showImportModal: show }),
+  setShowExportModal: (show) => set({ showExportModal: show }),
+  setShowPlanningCenterModal: (show, defaultTab) => set({ showPlanningCenterModal: show, showPlanningCenterDefaultTab: defaultTab }),
+  setShowPraiseChartsModal: (show, defaultTab) => set({ showPraiseChartsModal: show, showPraiseChartsDefaultTab: defaultTab }),
+  setShowSongSelectModal: (show) => set({ showSongSelectModal: show }),
 
   toggleTheme: () => {
     const current = get().theme;
