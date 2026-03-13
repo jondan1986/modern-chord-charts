@@ -1,0 +1,4 @@
+modern-chord-charts.local {
+	tls internal
+	reverse_proxy chord-charts:3000
+}
