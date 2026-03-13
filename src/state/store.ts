@@ -5,7 +5,7 @@
 import { create } from 'zustand';
 
 import { songStorage } from '@/src/services/storage';
-import { DEFAULT_THEME, ALL_THEMES } from "@/src/components/viewer/themes";
+import { DARK_THEME, ALL_THEMES } from "@/src/components/viewer/themes";
 import { Theme } from "@/src/mcs-core/model";
 
 interface AppState {
@@ -104,7 +104,7 @@ function saveCustomThemesToStorage(themes: Theme[]) {
 export const useAppStore = create<AppState>((set, get) => ({
   activeYaml: DEFAULT_YAML,
   activeSongId: undefined,
-  theme: DEFAULT_THEME,
+  theme: DARK_THEME,
   lastSavedYaml: DEFAULT_YAML,
   customThemes: [],
   activeSetlistId: null,
@@ -155,7 +155,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     saveCustomThemesToStorage(updated);
     const newState: Partial<AppState> = { customThemes: updated };
     if (get().theme.name === name) {
-      newState.theme = DEFAULT_THEME;
+      newState.theme = DARK_THEME;
     }
     set(newState);
   },
