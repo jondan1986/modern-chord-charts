@@ -4,9 +4,7 @@
 import React, { useState, useEffect } from "react";
 import { MCSParser } from "@/src/mcs-core/parser";
 import { SongViewer } from "@/src/components/viewer/SongViewer";
-import { DEFAULT_THEME, DARK_THEME } from "@/src/components/viewer/themes";
-import { Song, Theme, SongMetadata } from "@/src/mcs-core/model";
-import Link from "next/link";
+import { Song, SongMetadata } from "@/src/mcs-core/model";
 import { useAppStore } from "@/src/state/store";
 import { useRouter } from "next/navigation";
 import Editor from "@monaco-editor/react";
@@ -21,9 +19,6 @@ export default function EditorPage() {
     // Global Store
     const activeYaml = useAppStore((state) => state.activeYaml);
     const setActiveYaml = useAppStore((state) => state.setActiveYaml);
-    const saveCurrentSong = useAppStore((state) => state.saveCurrentSong);
-    const activeSongId = useAppStore((state) => state.activeSongId);
-    const resetSong = useAppStore((state) => state.resetSong);
     const router = useRouter();
 
     // Local State
@@ -32,16 +27,10 @@ export default function EditorPage() {
     const theme = useAppStore((state) => state.theme);
     const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
     const [selectedTextForModal, setSelectedTextForModal] = useState("");
-    const [selectedRangeForModal, setSelectedRangeForModal] = useState<any>(null);
+    const [selectedRangeForModal, setSelectedRangeForModal] = useState<import("monaco-editor").IRange | null>(null);
     const [isMetadataModalOpen, setIsMetadataModalOpen] = useState(false);
     const [isArrangementsModalOpen, setIsArrangementsModalOpen] = useState(false);
     const [isFindChordsOpen, setIsFindChordsOpen] = useState(false);
-
-    // Check if component mounted client-side
-    const [isMounted, setIsMounted] = useState(false);
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
 
     // Keyboard Shortcuts
     useEffect(() => {
@@ -75,13 +64,14 @@ export default function EditorPage() {
         return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
     }, [router]);
 
-    const editorRef = React.useRef<any>(null); // Type 'any' for now to avoid specific Monaco types dependency
-    const monacoRef = React.useRef<any>(null);
+    const editorRef = React.useRef<import("monaco-editor").editor.IStandaloneCodeEditor | null>(null);
+    const monacoRef = React.useRef<typeof import("monaco-editor") | null>(null);
 
     const updateMarkers = (err: any) => {
         if (!monacoRef.current || !editorRef.current) return;
         const monaco = monacoRef.current;
         const model = editorRef.current.getModel();
+        if (!model) return;
 
         if (!err) {
             monaco.editor.setModelMarkers(model, "owner", []);
@@ -147,6 +137,7 @@ export default function EditorPage() {
         if (selectedRangeForModal && editorRef.current) {
             const editor = editorRef.current;
             const model = editor.getModel();
+            if (!model) return;
             const lineCount = model.getLineCount();
 
             // 1. Remove the selection (Cut)
