@@ -1,22 +1,39 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { songStorage, StoredSong, StoredSetlist } from "@/src/services/storage";
 import { useAppStore } from "@/src/state/store";
 import { useRouter } from "next/navigation";
-import { SongList } from "@/src/components/library/SongList";
+import { SongList, EnrichedSong } from "@/src/components/library/SongList";
 import { SetlistList } from "@/src/components/library/SetlistList";
 import { ImportModal } from "@/src/components/library/ImportModal";
 import { ExportModal } from "@/src/components/library/ExportModal";
 import { SongSelectModal } from "@/src/components/library/SongSelectModal";
 import { PlanningCenterModal } from "@/src/components/pco/PlanningCenterModal";
 import { PraiseChartsModal } from "@/src/components/praisecharts/PraiseChartsModal";
+import { SearchBar } from "@/src/components/library/SearchBar";
+import { MCSParser } from "@/src/mcs-core/parser";
+
+function enrichSong(song: StoredSong): EnrichedSong {
+    try {
+        const parsed = MCSParser.parse(song.yaml);
+        return { ...song, key: parsed.metadata.key, tempo: parsed.metadata.tempo, themes: parsed.metadata.themes };
+    } catch {
+        return song;
+    }
+}
 
 export default function LibraryPage() {
-    const [songs, setSongs] = useState<StoredSong[]>([]);
+    const [songs, setSongs] = useState<EnrichedSong[]>([]);
     const [setlists, setSetlists] = useState<StoredSetlist[]>([]);
     const [activeTab, setActiveTab] = useState<'songs' | 'setlists'>('songs');
+
+    // Search & filter state
+    const [searchInput, setSearchInput] = useState("");
+    const [debouncedQuery, setDebouncedQuery] = useState("");
+    const [filterKey, setFilterKey] = useState<string | null>(null);
+    const [filterTempoRange, setFilterTempoRange] = useState<[number, number] | null>(null);
 
     const loadSong = useAppStore((state) => state.loadSong);
     const theme = useAppStore((state) => state.theme);
@@ -42,7 +59,8 @@ export default function LibraryPage() {
 
     const loadLibrary = async () => {
         const allSongs = await songStorage.getAllSongs();
-        setSongs(allSongs.sort((a, b) => b.updatedAt - a.updatedAt));
+        const enriched = allSongs.map(enrichSong);
+        setSongs(enriched.sort((a, b) => b.updatedAt - a.updatedAt));
 
         const allSetlists = await songStorage.getAllSetlists();
         setSetlists(allSetlists.sort((a, b) => b.updatedAt - a.updatedAt));
@@ -51,6 +69,43 @@ export default function LibraryPage() {
     useEffect(() => {
         loadLibrary();
     }, []);
+
+    // Debounce search input
+    useEffect(() => {
+        const timer = setTimeout(() => setDebouncedQuery(searchInput), 300);
+        return () => clearTimeout(timer);
+    }, [searchInput]);
+
+    // Filter songs
+    const filteredSongs = useMemo(() => {
+        let result = songs;
+        if (debouncedQuery) {
+            const q = debouncedQuery.toLowerCase();
+            result = result.filter(s =>
+                s.title.toLowerCase().includes(q) ||
+                s.artist.toLowerCase().includes(q) ||
+                (s.key && s.key.toLowerCase().includes(q)) ||
+                (s.themes && s.themes.some(t => t.toLowerCase().includes(q)))
+            );
+        }
+        if (filterKey) {
+            result = result.filter(s => s.key === filterKey);
+        }
+        if (filterTempoRange) {
+            const [min, max] = filterTempoRange;
+            result = result.filter(s => s.tempo !== undefined && s.tempo >= min && s.tempo <= max);
+        }
+        return result;
+    }, [songs, debouncedQuery, filterKey, filterTempoRange]);
+
+    const isFiltered = !!(debouncedQuery || filterKey || filterTempoRange);
+
+    const clearFilters = () => {
+        setSearchInput("");
+        setDebouncedQuery("");
+        setFilterKey(null);
+        setFilterTempoRange(null);
+    };
 
     // --- Song Handlers ---
     const handleOpenSong = async (id: string) => {
@@ -112,13 +167,29 @@ export default function LibraryPage() {
 
             {/* Content */}
             {activeTab === 'songs' ? (
-                <SongList
-                    songs={songs}
-                    theme={theme}
-                    selectedId={selectedSongId}
-                    onSelect={setSelectedSongId}
-                    onOpen={handleOpenSong}
-                />
+                <>
+                    <SearchBar
+                        searchQuery={searchInput}
+                        onSearchChange={setSearchInput}
+                        filterKey={filterKey}
+                        onFilterKeyChange={setFilterKey}
+                        filterTempoRange={filterTempoRange}
+                        onFilterTempoRangeChange={setFilterTempoRange}
+                        filteredCount={filteredSongs.length}
+                        totalCount={songs.length}
+                        theme={theme}
+                    />
+                    <SongList
+                        songs={filteredSongs}
+                        theme={theme}
+                        selectedId={selectedSongId}
+                        onSelect={setSelectedSongId}
+                        onOpen={handleOpenSong}
+                        searchQuery={debouncedQuery}
+                        isFiltered={isFiltered}
+                        onClearFilters={clearFilters}
+                    />
+                </>
             ) : (
                 <SetlistList
                     setlists={setlists}

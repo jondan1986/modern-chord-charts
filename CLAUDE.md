@@ -60,3 +60,17 @@ To run a single test file: `npx vitest run src/path/to/file.test.ts`
 - `src/services/` — Storage service, chord DB, ChordPro importer
 - `src/actions/` — Next.js Server Actions (file I/O)
 - `docs/MCS_FORMAT_GUIDE.md` — User-facing MCS format reference
+
+## Backlog Management
+
+The project backlog is managed in **Linear** via MCP (configured in `.mcp.json`).
+
+- **Team**: Modern-chord-charts (key: `MOD`)
+- **Team ID**: `27f74917-5705-4986-aada-95436192dba8`
+- Use `mcp__linear__list_issues` to view the backlog before starting work
+- Use `mcp__linear__update_issue` to move issues through the workflow:
+  - **Todo** → **In Progress**: when starting work on an issue
+  - **In Progress** → **In Review**: when implementation is complete and ready for user validation
+  - **In Review** → **Done**: only after the user has validated the success criteria and approved the change
+- When creating new issues, include a user story, scope, and success criteria checklist
+- Never mark an issue as Done without explicit user approval

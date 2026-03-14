@@ -55,6 +55,13 @@ Run `npm run build`.
    - Run `git merge <feature-branch> --no-ff` to merge with a merge commit
    - Report the merge result to the user
 
+## Step 7: Push to Origin
+
+Run `git push origin main` to push the commit to the remote repository.
+
+- If the push **succeeds**, proceed to the Final Report.
+- If the push **fails**, report the error to the user and do not retry automatically.
+
 ## Final Report
 
 Summarize what happened:
@@ -64,3 +71,4 @@ Summarize what happened:
 - Build result (pass/fail, any fixes applied)
 - Commit hash and message
 - Branch/merge status
+- Push result (success/fail)
