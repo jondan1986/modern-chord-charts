@@ -29,25 +29,36 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
     const setTransposeSteps = (v: React.SetStateAction<number>) => {
         if (externalTransposeSteps === undefined) setInternalTransposeSteps(v);
     };
+    const [capoFret, setCapoFret] = React.useState(0);
     const sectionRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
-    // Reset arrangement and transpose if song changes ID
+    // Reset arrangement, transpose, and capo if song changes
     React.useEffect(() => {
         const hasArr = song.arrangements && song.arrangements.length > 0;
         setActiveArrangementIdx(hasArr ? 0 : null);
         setTransposeSteps(0);
+        setCapoFret(0);
     }, [song.metadata.title, song.metadata.artist, song.arrangements]);
 
-    // Transpose Logic
+    // Transpose + Capo Logic
+    // transposeSteps changes the sounding key (for all players)
+    // capoFret offsets chord shapes locally (effectiveTranspose = transposeSteps - capoFret)
+    const effectiveTranspose = transposeSteps - capoFret;
+
     const displayedSong = React.useMemo(() => {
-        if (transposeSteps === 0) return song;
+        if (transposeSteps === 0 && effectiveTranspose === 0) return song;
 
         const originalKey = song.metadata.key || "C";
-        const newKey = getTargetKey(originalKey, transposeSteps);
-        const pref = getKeyPreference(newKey);
+        // Metadata key = sounding key (transpose only, no capo offset)
+        const soundingKey = transposeSteps !== 0 ? getTargetKey(originalKey, transposeSteps) : originalKey;
+        // Chord shapes use effectiveTranspose (transpose - capo)
+        const shapeKey = effectiveTranspose !== 0 ? getTargetKey(originalKey, effectiveTranspose) : originalKey;
+        const pref = getKeyPreference(shapeKey);
 
         const newSong = { ...song };
-        newSong.metadata = { ...song.metadata, key: newKey };
+        newSong.metadata = { ...song.metadata, key: soundingKey };
+
+        if (effectiveTranspose === 0) return newSong;
 
         newSong.sections = song.sections.map(section => {
             const newSection = { ...section };
@@ -59,7 +70,7 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
                         return line.replace(/\b([A-G](?:#|b)?(?:[a-zA-Z0-9]*)?(?:\/[A-G](?:#|b)?)?)\b/g, (match) => {
                             // verify it looks like a chord? Basic check:
                             if (!match.match(/^[A-G]/)) return match;
-                            return transposeChord(match, transposeSteps, pref);
+                            return transposeChord(match, effectiveTranspose, pref);
                         });
                     }
                     return line;
@@ -68,7 +79,7 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
                     const newLine = { ...line };
                     newLine.content = line.content.map(seg => {
                         if (!seg.chord) return seg;
-                        return { ...seg, chord: transposeChord(seg.chord, transposeSteps, pref) };
+                        return { ...seg, chord: transposeChord(seg.chord, effectiveTranspose, pref) };
                     });
                     return newLine;
                 }
@@ -77,7 +88,7 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
         });
 
         return newSong;
-    }, [song, transposeSteps]);
+    }, [song, transposeSteps, effectiveTranspose]);
 
     // Determine sections to display
     const visibleSections = React.useMemo(() => {
@@ -138,6 +149,25 @@ export const SongViewer: React.FC<Props> = ({ song, theme = DEFAULT_THEME, onEdi
                                             onClick={() => setTransposeSteps(s => s + 1)}
                                             className="no-print hover:text-blue-500 px-1 font-bold"
                                         >+</button>
+                                    </div>
+
+                                    <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">
+                                        <button
+                                            onClick={() => setCapoFret(f => Math.max(0, f - 1))}
+                                            className="no-print hover:text-blue-500 px-1 font-bold"
+                                        >-</button>
+                                        <span className="font-semibold text-gray-900 dark:text-gray-100">
+                                            Capo: {capoFret}
+                                        </span>
+                                        <button
+                                            onClick={() => setCapoFret(f => Math.min(12, f + 1))}
+                                            className="no-print hover:text-blue-500 px-1 font-bold"
+                                        >+</button>
+                                        {capoFret > 0 && (
+                                            <span className="text-xs opacity-70">
+                                                ({formatChordForDisplay(getTargetKey(displayedSong.metadata.key || "C", -capoFret))} shapes)
+                                            </span>
+                                        )}
                                     </div>
 
                                     {displayedSong.metadata.tempo && <span><span className="opacity-60">Tempo:</span> {displayedSong.metadata.tempo} bpm</span>}
