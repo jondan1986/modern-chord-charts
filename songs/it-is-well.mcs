@@ -16,6 +16,7 @@ sections:
   - id: "v1"
     type: "verse"
     label: "Verse 1"
+    bars: 16
     lines:
       - "When [G]peace like a [G7]river at[C]tendeth my [G]way"
       - "When [G]sorrows like [D]sea billows [G]roll"
@@ -25,6 +26,7 @@ sections:
   - id: "c1"
     type: "chorus"
     label: "Chorus"
+    bars: 16
     lines:
       - "It is [G]well [D]with my [G]soul"
       - "It is [G]well, it is [D]well with my [G]soul"
@@ -32,6 +34,7 @@ sections:
   - id: "v2"
     type: "verse"
     label: "Verse 2"
+    bars: 16
     lines:
       - "Though [G]Satan should [G7]buffet, though [C]trials should [G]come"
       - "Let [G]this blest as[D]surance con[G]trol"
@@ -41,6 +44,7 @@ sections:
   - id: "v3"
     type: "verse"
     label: "Verse 3"
+    bars: 16
     lines:
       - "My [G]sin — oh the [G7]bliss of this [C]glorious [G]thought"
       - "My [G]sin, not in [D]part, but the [G]whole"
@@ -50,6 +54,7 @@ sections:
   - id: "v4"
     type: "verse"
     label: "Verse 4"
+    bars: 16
     lines:
       - "And [G]Lord haste the [G7]day when the [C]faith shall be [G]sight"
       - "The [G]clouds be rolled [D]back as a [G]scroll"
@@ -64,6 +69,12 @@ arrangements:
       - "v2"
       - "c1"
       - "v3"
+      - "c1"
+      - "v4"
+      - "c1"
+  - name: "Short"
+    order:
+      - "v1"
       - "c1"
       - "v4"
       - "c1"

@@ -20,6 +20,7 @@ sections:
   - id: "intro"
     type: "grid"
     label: "Intro"
+    bars: 16
     lines:
       - "| C | Am | F | G |"
       - "| C | Am | F | G |"
@@ -27,6 +28,7 @@ sections:
   - id: "v1"
     type: "verse"
     label: "Verse 1"
+    bars: 16
     lines:
       - "This is a [C]standard verse with [Am]lines"
       - "You can [F]place chords [G]inline"
@@ -35,6 +37,7 @@ sections:
   - id: "c1"
     type: "chorus"
     label: "Chorus"
+    bars: 16
     lines:
       - "This is the [F]Chorus, sing it [C]loud"
       - "Make the [G]developer [Am]proud"
